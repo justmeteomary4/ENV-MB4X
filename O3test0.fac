@@ -1,0 +1,51 @@
+EXECUTE OPEN 7 "O3test0.dat" UNKNOWN;
+VARIABLE
+O3 O1D O3P OH NO NO2 HO2 H2O2 CH3O CH3O2 CH3OOH 
+O3F;
+PARAMETER
+O2 5.0D18
+CO 5.0D12
+CO2 9.0D15
+CH4 4.25D13
+H2O
+TEMP 288;
+COMPILE INITIAL;
+OH = 2.0D5;
+NO = 2.0D12;
+NO2 = 1.0D11;
+**;
+COMPILE EQUATIONS;
+* Experiment without ANs (0 or control);
+% 2.0D-6                        : O3 = O1D;
+% 2.2D-10                       : O1D+H2O = OH+OH;
+% 2.2D-13                       : OH+CO = HO2+CO2;
+% 2.4D-12*EXP(-1710./TEMP)      : OH+CH4 = CH3O2;
+% 2.2D-13*EXP(600./TEMP)        : HO2+HO2 = H2O2;
+% 7.7D-14*EXP(1300./TEMP)       : HO2+CH3O2 = CH3OOH;
+% 1.4D-14*EXP(-600./TEMP)       : HO2+O3 = OH;
+% 3.7D-12*EXP(240./TEMP)        : HO2+NO = NO2+OH;
+% 2.3D-12*EXP(360/TEMP)*0.999   : CH3O2+NO = NO2+CH3O;
+% 1.0D3                         : NO2 = NO+O3P;
+% 1.8D-14                       : O3P+O2 = O3;
+* Experiment with ANs (1);
+*% 2.3D-12*EXP(360/TEMP)*0.001   : CH3O2+NO = CH3NO3; *MCM;
+*% J<51>                         : CH3NO3 = CH3O+NO2; *MCM;
+*% 4.0D-13*EXP(-845/TEMP)        : CH3NO3+OH = HCHO+NO2; *MCM;
+*% J<3>                          : HCHO = HO2+HO2+CO;
+*% J<4>                          : HCHO = CO+H2;
+*% 1                             : HCHO+OH = HO2+CO;
+
+= 1.8D-14                       : = O3f;
+*= 5.8D-34*M*(TEMP/300.0)@-2.6   : = O3f;
+**;
+COMPILE TABLE;
+PSTREAM 3;
+**;
+WHENEVER
+TIME=0+1*719 % CALL TABLE;
+**;
+SETPSTREAM 3 7 13;
+TIME O3 O1D O3P OH NO NO2 HO2 H2O2 CH3O CH3O2 CH3OOH O3F;
+**;
+BEGIN;
+STOP;
