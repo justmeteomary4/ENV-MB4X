@@ -1,4 +1,4 @@
-setwd("D:/FACSIMILE/model")
+setwd("D:/FACSIMILE/ANsCBmodel")
 file1 <- "O3test0.dat"
 df <- read.table(file1,1,skip=1)
 
