@@ -1,19 +1,19 @@
-EXECUTE OPEN 7 "O3test0_chem.dat" UNKNOWN;
-EXECUTE OPEN 8 "O3test0_supp.dat" UNKNOWN;
+EXECUTE OPEN 7 "O3test1_chem.dat" UNKNOWN;
+EXECUTE OPEN 8 "O3test1_supp.dat" UNKNOWN;
 
 VARIABLE
-O3 O1D O3P OH NO NO2 HO2 H2O2 CH3O CH3O2 CH3OOH CH3NO3 HCHO HCO H2 1.4000D13 O3F;
+O3 O1D O3P OH NO NO2 HO2 H2O2 CH3O CH3O2 CH3OOH CH3NO3 HCHO HCO H H2 O3F;
 PARAMETER
-O2 5.0D18
-CO 5.0D12
-CO2 9.0D15
-CH4 4.25D13
-H2O
-H;
+O2 5.090E+18
+N2 1.897E+19
+H2O 0.
+CO 2.430E+12
+CO2 9.720E+15 
+CH4 4.374E+16;
+*M 2.430E+19;
 
-* Time: 01.06.15, start 06:00 UTC, end 22:00 UTC (7.920D+4);
-PARAMETER TIME0 2.16D+4;
-*PARAMETER TIMEN 7.920D+4;
+* Time: 01.06.15, start 06:00 GMT, end 22:00 GMT (7.920D+4);
+PARAMETER TIME0 2.16D+4 TIMEN 7.920D+4;
 * Location: 45N 30W, solar declination angle (DEC) [degrees];
 PARAMETER LAT 45.0 DEC 23.12 PI XTIME XHOUR LHA SEC;
 * Meteorological conditions: clear sky, dry;
@@ -26,9 +26,10 @@ PARAMETER <50> WORK;
 
 COMPILE INITIAL;
 FOR #8=0;
-OH = 2.0D5;
-NO = 2.0D12;
-NO2 = 1.0D11;
+O3 = 9.720E+11;
+OH = 9.700E+5;
+NO = 1.215E+08;
+NO2 = 2.430E+11;
 ?PI=4.*ARTAN(1.0D+0);
 **;
 
@@ -40,7 +41,7 @@ XHOUR=XTIME/3600;
 LHA=(1.+XTIME/4.32D+4)*PI;
 SEC=1.0D+0/(RAMP(COS(LHA)*COS(LAT)*COS(DEC)+SIN(LAT)*SIN(DEC))+1.0D-30);
 ARRAY <3> WORK;
-J=L*COS(DEC)*EXP(-N*SEC);
+J=L*(COS(DEC*PI/180))@M*EXP(-N/COS(DEC*PI/180));
 ARRAY END;
 DO 10 FOR #11 = 0(1)3;
   IF (J<#11>-1.0D-9) *,15,15;
@@ -54,22 +55,27 @@ COMPILE EQUATIONS;
 % 2.0D-6                        : O3 = O1D;
 % 2.2D-10                       : O1D+H2O = OH+OH;
 % 2.2D-13                       : OH+CO = HO2+CO2;
-% 2.4D-12*EXP(-1710./TEMP)      : OH+CH4 = CH3O2;
-% 2.2D-13*EXP(600./TEMP)        : HO2+HO2 = H2O2;
-% 7.7D-14*EXP(1300./TEMP)       : HO2+CH3O2 = CH3OOH;
-% 1.4D-14*EXP(-600./TEMP)       : HO2+O3 = OH;
-% 3.7D-12*EXP(240./TEMP)        : HO2+NO = NO2+OH;
-% 2.3D-12*EXP(360/TEMP)*0.999   : CH3O2+NO = NO2+CH3O;
+% 6.3D-15                       : OH+CH4 = CH3O2;
+% 1.7D-12                       : HO2+HO2 = H2O2;
+% 5.6D-12                       : HO2+CH3O2 = CH3OOH;
+% 2.0D-15                       : HO2+O3 = OH;
+% 8.1D-12                       : HO2+NO = NO2+OH;
+% 7.6D-12                       : CH3O2+NO = NO2+CH3O;
+% 1.4D-13                       : CH3O2+CH3O2 = CH3O+CH3O;
+% 6.5D-6                        : CH3OOH = CH3O+OH; *hv;
+% 5.2D-12                       : CH3OOH+OH = CH3O2;
 % 1.0D3                         : NO2 = NO+O3P;
 % 1.8D-14                       : O3P+O2 = O3;
 * Experiment with ANs (1);
-* % 2.3D-12*EXP(360/TEMP)*0.001   : CH3O2+NO = CH3NO3; *MCM;*
-* % J<0>                          : CH3NO3 = CH3O+NO2; *MCM;
-* * % 4.0D-13*EXP(-845/TEMP)        : CH3NO3+OH = HCHO+NO2; *MCM;
-* % J<1>                          : HCHO = HCO+H;
-* % J<2>                          : HCHO = CO+H2;
-* * % 1.1D-11                       : HCHO+OH = HO2+CO; *plumea;
-* *= 1.8D-14                       : = O3F;
+% 2.3D-12*EXP(360/TEMP)*0.001   : CH3O2+NO = CH3NO3; *MCM;
+% 1.6D-6                        : CH3NO3 = CH3O+NO2; *Brasseur;
+% 4.0D-13*EXP(-845/TEMP)        : CH3NO3+OH = HCHO+NO2; *MCM;
+% J<1>                          : HCHO = HCO+H;
+% J<2>                          : HCHO = CO+H2;
+% 1.1D-11                       : HCHO+OH = HO2+CO; *plumea;
+% 5.5D-12                       : HCO+O2 = HO2+CO;
+% 2.4D-13                       : CO+OH = CO2+HO2;
+*= 1.8D-14                       : = O3F;
 **;
 
 WHEN 
