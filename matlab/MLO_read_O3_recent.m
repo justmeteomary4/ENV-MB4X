@@ -2,7 +2,7 @@
 % mixing ratios [ppb] at Mauna Loa station (2011-2015).
 % Calculate overall mean O3 mixing ratio (not using precalculated daily mean values).
 clear; clc;
-indir = 'MLO/lst_mlo_o3_6m_2011-2015/';
+indir = 'MLO/O3_2011-2015/';
 files = dir(fullfile(indir,'/','lst_mlo_o3_6m_hourlymean_*.dat'));
 files = strcat(indir,{files.name}');
 format = '%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f';
