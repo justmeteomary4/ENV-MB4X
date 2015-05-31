@@ -1,5 +1,5 @@
-EXECUTE OPEN 7 "O3test1_chem.dat" UNKNOWN;
-EXECUTE OPEN 8 "O3test1_supp.dat" UNKNOWN;
+EXECUTE OPEN 7 "O3test1_chem_test.dat" UNKNOWN;
+EXECUTE OPEN 8 "O3test1_supp_test.dat" UNKNOWN;
 
 VARIABLE
 O3 O1D O3P OH NO NO2 HO2 H2O2 CH3O CH3O2 CH3OOH CH3NO3 HCHO HCO H H2 O3F;
@@ -12,17 +12,23 @@ CO2 9.720E+15
 CH4 4.374E+16;
 *M 2.430E+19;
 
-* Time: 01.06.15, start 06:00 GMT, end 22:00 GMT (7.920D+4);
-PARAMETER TIME0 2.16D+4 TIMEN 7.920D+4;
-* Location: 45N 30W, solar declination angle (DEC) [degrees];
-PARAMETER LAT 45.0 DEC 23.12 PI XTIME XHOUR LHA SEC;
+* Time: 01.07.15 (182nd day of the year);
+PARAMETER DAYN 182.;
+PARAMETER HOU MIN SEC DAYHOU DELTA THA COSZA XHOUR XMIN XSEC;
+* Discontinuety times;
+* PARAMETER T1 1720 T2 25200 T3 50075 T4 53260 T5 60330 T6 64460 
+T7 64820 T8 65270 T9 65590 T10 66030 T11 66050 T12 66250 
+T13 66406 T14 66832 T15 67120 T16 67485 T17 67745 T18 68290
+T19 68360;
+* Location: 45N 30W;
+PARAMETER LAT 45.0 PHI;
 * Meteorological conditions: clear sky, dry;
 PARAMETER TEMP 298;
-* Photolysis (data from Jenkin1997);
-PARAMETER <3> J;
-PARAMETER <3> L 1.748D-6 4.866D-5 6.790D-5 M 1.166 0.781 0.565;
-PARAMETER <3> N 0.324 0.349 0.275;
-PARAMETER <50> WORK;
+* Photolysis (data from MCMv3.3);
+PARAMETER <5> J;
+PARAMETER <5> L 6.073D-05 1.165D-02 1.588D-06 4.642D-05 6.853D-05;
+PARAMETER <5> M 1.743 0.244 1.154 0.762 0.477;
+PARAMETER <5> N 0.474 0.267 0.318 0.353 0.323;
 
 COMPILE INITIAL;
 FOR #8=0;
@@ -30,32 +36,38 @@ O3 = 9.720E+11;
 OH = 9.700E+5;
 NO = 1.215E+08;
 NO2 = 2.430E+11;
-?PI=4.*ARTAN(1.0D+0);
+?PI = 4.*ARTAN(1.0D+0);
+?PHI = LAT*PI/180.;
+HOU = 0;
+MIN = 0;
+SEC = 0;
 **;
 
 COMPILE FTIME;
 FOR #8=*;
-XTIME=TIME+TIME0;
-XHOUR=XTIME/3600;
-*Local hour angle (LHA) [radians];
-LHA=(1.+XTIME/4.32D+4)*PI;
-SEC=1.0D+0/(RAMP(COS(LHA)*COS(LAT)*COS(DEC)+SIN(LAT)*SIN(DEC))+1.0D-30);
-ARRAY <3> WORK;
-J=L*(COS(DEC*PI/180))@M*EXP(-N/COS(DEC*PI/180));
-ARRAY END;
-DO 10 FOR #11 = 0(1)3;
-  IF (J<#11>-1.0D-9) *,15,15;
-    J<#11>=1.0D-9;
-  LABEL 15;
-LABEL 10;
+
+?XHOUR = HOU;
+?XMIN = MIN;
+?XSEC = SEC;
+
+DAYHOU = DAYN+HOU/24;
+DELTA = 23.5*PI/180.*COS(2.*PI*(DAYHOU-173.)/365.);
+THA = 2.*PI*(HOU+MIN/60.+SEC/3600.-12.)/24.;
+COSZA=SIN(PHI)*SIN(DELTA)+COS(PHI)*COS(DELTA)*COS(THA);
+IF (COSZA) *,11,11;
+  COSZA=1.0D-9;
+LABEL 11;
+DO 1 FOR #1 = 0(1)4;
+  J<#1>=L<#1>*(COSZA)@M<#1>*EXP(-N<#1>/COSZA);
+LABEL 1;
 **;
 
 COMPILE EQUATIONS;
 * Experiment without ANs (0 or control);
-% 2.0D-6                        : O3 = O1D;
+% 2.0D-6                        : O3 = O1D; *literature J<0>;
 % 2.2D-10                       : O1D+H2O = OH+OH;
 % 2.2D-13                       : OH+CO = HO2+CO2;
-% 6.3D-15                       : OH+CH4 = CH3O2;
+RF % 6.3D-15                       : OH+CH4 = CH3O2;
 % 1.7D-12                       : HO2+HO2 = H2O2;
 % 5.6D-12                       : HO2+CH3O2 = CH3OOH;
 % 2.0D-15                       : HO2+O3 = OH;
@@ -64,24 +76,41 @@ COMPILE EQUATIONS;
 % 1.4D-13                       : CH3O2+CH3O2 = CH3O+CH3O;
 % 6.5D-6                        : CH3OOH = CH3O+OH; *hv;
 % 5.2D-12                       : CH3OOH+OH = CH3O2;
-% 1.0D3                         : NO2 = NO+O3P;
+% 1.0D3                         : NO2 = NO+O3P; *literature J<1>;
+% 1.8D10−14                     : NO+O3 = NO2+O2; *Atkinson2004;
 % 1.8D-14                       : O3P+O2 = O3;
 * Experiment with ANs (1);
 % 2.3D-12*EXP(360/TEMP)*0.001   : CH3O2+NO = CH3NO3; *MCM;
-% 1.6D-6                        : CH3NO3 = CH3O+NO2; *Brasseur;
+% 1.6D-6                        : CH3NO3 = CH3O+NO2; *Brasseur J<2>;
 % 4.0D-13*EXP(-845/TEMP)        : CH3NO3+OH = HCHO+NO2; *MCM;
-% J<1>                          : HCHO = HCO+H;
-% J<2>                          : HCHO = CO+H2;
-% 1.1D-11                       : HCHO+OH = HO2+CO; *plumea;
+% 1.55D-5                       : HCHO = HCO+H; *MCM J<3>;
+% 2.38D-5                       : HCHO = CO+H2; *MCM J<4>;
+% 1.1D-11                       : HCHO+OH = HO2+CO; ****plumea;
 % 5.5D-12                       : HCO+O2 = HO2+CO;
 % 2.4D-13                       : CO+OH = CO2+HO2;
-*= 1.8D-14                       : = O3F;
+= RF                       : = O3F;
 **;
 
-WHEN 
-1) TIME=0+1*3599% CALL BLOCK 1;
+WHEN
+TIME=0+3600*24 CALL BLOCK 1; *every hour;
+TIME=0+60*1440 CALL BLOCK 2; *every minute;
+TIME=0+1*86400 CALL BLOCK 3; *every second;
+TIME=0+1*86400 % CALL BLOCK 4;
+* TIME=T1 T2 T3 T4 T5 T6 T7 T8 T9 T10 T11 T12 T13 T14 T15 T16 T17 T18 
+T19 RESTART;
 **;
 COMPILE BLOCK 1;
+HOU = HOU+1;
+MIN = 0;
+**;
+COMPILE BLOCK 2;
+MIN = MIN+1;
+SEC = 0;
+**;
+COMPILE BLOCK 3;
+SEC = SEC+1;
+**;
+COMPILE BLOCK 4;
 #8=#8+1;
 **;
 COMPILE TABLE;
@@ -89,13 +118,13 @@ PSTREAM 3;
 PSTREAM 4;
 **;
 WHENEVER
-TIME=0+1*3599 % CALL TABLE;
+TIME=0+1*86400 % CALL TABLE;
 **;
-SETPSTREAM 3 7 14;
-TIME O3 O1D O3P OH NO NO2 HO2 H2O2 CH3O CH3O2 CH3OOH CH3NO3 HCHO;
+SETPSTREAM 3 7 15;
+TIME O3 O1D O3P OH NO NO2 HO2 H2O2 CH3O CH3O2 CH3OOH CH3NO3 HCHO O3F;
 **;
 SETPSTREAM 4 8;
-XTIME LHA SEC J;
+TIME SEC MIN HOU COSZA J;
 **;
 BEGIN;
 STOP;
