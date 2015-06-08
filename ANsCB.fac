@@ -2,7 +2,7 @@ EXECUTE OPEN 7 "chem_1.dat" UNKNOWN;
 
 VARIABLE
 H H2 O O1D O3P HO O3 NO NO2 HONO HONO2 HO2 H2O2 
-CH2OH CH2OOH CH3 CH3O CH3O2 CH3OH CH3OOH CH3ONO2 HCHO HCO 
+CH2OH CH2OOH CH3 CH3O CH3OO CH3O2 CH3OH CH3OOH CH3ONO2 HCHO HCO 
 RFHCOF RFCH3OF;
 PARAMETER
 O2 5.090E+18 
@@ -49,19 +49,21 @@ COMPILE EQUATIONS;
 *% 1.1D-10                     : O1D+H2 = HO+H;            *Atkinson2004;
 % 2.2D-10                     : O1D+H2O = HO+HO;          *Atkinson2004;
 *% 6.7D-15                     : HO+H2 = H;                *Atkinson2004;
+% 1.48D-12                    : HO+HO = O;                *Atkinson2004;
+% 6.9D-31*N2*(TEMP/300)@(-0.8): HO+HO = H2O2;             *Atkinson2004;
 % 1.1D-10                     : HO+HO2 = ;                *Atkinson2004;
 % 1.7D-12                     : HO+H2O2 = HO2;            *Atkinson2004;
 % 7.3D-14                     : HO+O3 = HO2;              *Atkinson2004;
 % 1.6D-12                     : HO2+HO2 = H2O2;           *Atkinson2004;
-% 5.2D-32                     : HO2+HO2 = H2O2;           *Atkinson2004;
+% 5.2D-32*N2                  : HO2+HO2 = H2O2;           *Atkinson2004;
 % 2.0D-15                     : HO2+O3 = HO;              *Atkinson2004;
 % 3.86D-6                     : H2O2 = HO+HO;             *J 3.86D-6 24hour average MCMv3.3;
 * NOx reactions--------------------------------------------------------;
-*% (1.0D-31*N2*3.0D-11)*0.85/(1.0D-31+3.0D-11): O+NO = NO2;*Atkinson2004;
+*% 1.0D-31*N2*(TEMP/300)@(-1.6): O+NO = NO2;               *Atkinson2004;
 *% 1.0D-11                     : O+NO2 = NO;               *Atkinson2004;
 % 6.0D-12                     : HO+HONO = NO2;            *Atkinson2004;
-% (7.4D-31*N2*3.3D-11)*0.81/(7.4D-31*N2+3.3D-11) : HO+NO = HONO;*Atkinson2004;
-% (3.3D-30*N2*4.1D-11)*0.4/(3.3D-30*N2+4.1D-11): HO+NO2 = HONO2;*Atkinson2004;
+% 7.4D-31*N2*(TEMP/300)@(-2.4): HO+NO = HONO;             *Atkinson2004;
+% 3.3D-30*N2*(TEMP/300)@(-3.0): HO+NO2 = HONO2;           *Atkinson2004;
 % 8.8D-12                     : HO2+NO = HO+NO2;          *Atkinson2004;
 % 3.3D-39*EXP(530/TEMP)       : NO+NO = NO2+NO2;          *Atkinson2004;
 % 1.8D-14                     : NO+O3 = NO2;              *Atkinson2004;
@@ -69,30 +71,31 @@ COMPILE EQUATIONS;
 % 3.31D-7                     : HONO2 = NO2+HO;           *J 3.31D-7 24hour average MCMv3.3;
 % 4.4D-3                      : NO2 = NO+O;               *J 4.4D-3 24hour average MCMv3.3, 1.0D-3 ANsNEW;
 * HO organic reactions-------------------------------------------------;
-% 6.4D-15                     : HO+CH4 = CH3;            *Atkinson2006;
+% 6.4D-15                     : HO+CH4 = CH3;             *Atkinson2006;
 % 1.44D-13*(1+N2/4.2D+19)     : HO+CO = H+CO2;            *Atkinson2006;
 % 8.5D-12                     : HO+HCHO = HCO;            *Atkinson2006;
-% 7.65D-13                    : HO+CH3OH = CH2OH;         *Atkinson2006;
-% 1.35D-13*0.15               : HO+CH3OH = CH3O;          *Atkinson2006;
-% 1.9D-12                     : HO+CH3OOH = CH2OOH;       *Atkinson2006;
+% 9.0D-13                     : HO+CH3OH = *0.85:CH2OH,*0.15:CH3O;*Atkinson2006;
+% 5.5D-12                     : HO+CH3OOH = *0.35:CH2OOH,*0.65:CH3OO;*Atkinson2006;
 * Carbon radicals reactions--------------------------------------------;
-% (1.0D-30*N2*1.8D-12)*0.27/(1.0D-30*N2+1.8D-12): CH3+O2 = CH3O2;*Atkinson2006;
+% 1.0D-30*N2*(TEMP/300)@(-3.3): CH3+O2 = CH3O2;           *Atkinson2006;
 RFHCO % 5.1D-12               : HCO+O2 = CO+HO2;          *Atkinson2006;
+% 9.7D-12                     : CH2OH+O2 = HCHO+HO2;      *Atkinson2006;
 * ROx reactions--------------------------------------------------------;
 RFCH3O % 1.9D-15              : CH3O+O2 = HCHO+HO2;       *Atkinson2006;
-% 5.2D-12                     : CH3O2+HO2 = CH3OOH;       *Atkinson2006*;
+% 5.2D-12                     : CH3O2+HO2 = *0.9:CH3OOH,*0.1:HCHO;*Atkinson2006*;
 % 7.7D-12                     : CH3O2+NO = CH3O+NO2;      *Atkinson2006;
-% 1.3D-13                     : CH3O2+CH3O2 = CH3OH+HCHO; *Atkinson2006;
-% 1.3D-13*0.30                : CH3O2+CH3O2 = CH3O+CH3O;  *Atkinson2006;
+% 9.6D-12*EXP(-1150/TEMP)     : CH3O+NO2 = HCHO+HONO;     *Atkinson2006;
+% 3.5D-13                     : CH3O2+CH3O2 = *0.64:CH3OH,*0.64:HCHO,
+                                              *0.3:CH3O,*0.3:CH3O;*Atkinson2006;
 * Photolysis of organic compounds--------------------------------------;
 % 1.55D-5                     : HCHO = HCO+H;             *J MCMv3.3;
 % 2.38D-5                     : HCHO = CO+H2;             *J MCMv3.3;
 % 2.83D-6                     : CH3OOH = CH3O+HO;         *J 2.83D-6 24hour average MCMv3.3, 6.5D-6 BrasseurTextbook1999;
 * Alkyl nitrates (1);
-% 2.3D-14                     : HO+CH3ONO2 = HCHO+NO2;     *Atkinson2006 and MCMv3.3;
-% 2.3D-12*EXP(360/TEMP)*0.001 : CH3O2+NO = CH3ONO2;        *2.3D-12*EXP(360/TEMP)*0.001 MCMv3.3;
-% (8.1D-29*N2*2.1D-11)*0.44/(8.1D-29*N2+2.1D-11) : CH3O+NO2 = CH3ONO2;*Atkinson2006;
-% 5.56D-7                      : CH3ONO2 = CH3O+NO2;        *J 5.56D-7 24hour average MCMv3.3, 1.6D-6 BrasseurTextbook1999;
+% 2.3D-14                     : HO+CH3ONO2 = HCHO+NO2;    *Atkinson2006 and MCMv3.3;
+% 2.3D-12*EXP(360/TEMP)*0.001 : CH3O2+NO = CH3ONO2;       *2.3D-12*EXP(360/TEMP)*0.001 MCMv3.3;
+% 8.1D-29*N2*(TEMP/300)@(-4.5): CH3O+NO2 = CH3ONO2;       *Atkinson2006;
+% 5.56D-7                     : CH3ONO2 = CH3O+NO2;       *J 5.56D-7 24hour average MCMv3.3, 1.6D-6 BrasseurTextbook1999;
 * Fluxes;
 = RFHCO                       : = RFHCOF;
 = RFCH3O                      : = RFCH3OF;
