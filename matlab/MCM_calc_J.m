@@ -22,7 +22,7 @@ end
 %% Read NOAA solar calculations output
 % (sun declination angle, hour angle, solar zenith angle)
 lat = 45; lon = -30; tzone = -1; date = '01.07.2015'; step = 'min';
-fid2 = fopen([indir,'/','NOAA_dec_hour_zenith_angle_',step,'_minus.dat'],'r');
+fid2 = fopen([indir,'/','NOAA_dec_hour_zenith_angle_',step,'.dat'],'r');
 format2 = '%f %f %f';
 rd2 = textscan(fid2,format2,'headerlines',1);
 fclose(fid2);
@@ -57,5 +57,5 @@ for in = 1:length(name)
     xlabel(strcat('Time, ',step)); xlim([0 length(td2)]);
     ylabel(strcat('J, 1/',step));
     set(gcf,'visible','off')
-    print(gcf,'-dpng','-r300',imgname);
+%     print(gcf,'-dpng','-r300',imgname);
 end
