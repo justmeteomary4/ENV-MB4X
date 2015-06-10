@@ -1,0 +1,40 @@
+% Read and plot resulting mixing ratios from ANsCB model
+%% Read mixing ratios
+clear; clc;
+fname = 'flux_0';
+indir = '..';
+outdir = 'ANsCB_pics';
+fnamel = [indir,'/',fname,'.dat'];
+f = importdata(fnamel,' ',2);
+td1 = f.data;
+for i = 1:numel(f.colheaders)
+    name{i} = f.colheaders{i}(2:end);
+end
+%% Calculate number of carbon bonds,
+% i.e. fluxes through reactions where carbon bond is broken and peroxy radical is
+% produced, namely:
+% HCO+O2 = CO+HO2
+% CH3O+O2 = HCHO+HO2
+% CB = td1(:,13) + td1(:,14);
+%% Plot mixing ratios
+xend = 3600*24;%length(td1);
+f=figure;
+subplot(3,3,1); plot(td1(:,1),'LineWidth',2,'Color','r'); title(name{1});
+subplot(3,3,2); plot(td1(:,2),'LineWidth',2,'Color','r'); title(name{2});
+subplot(3,3,3); plot(td1(:,3),'LineWidth',2); title(name{3});
+subplot(3,3,4); plot(td1(:,4),'LineWidth',2); title(name{4});
+subplot(3,3,5); plot(td1(:,5),'LineWidth',2,'Color','r'); title(name{5});
+subplot(3,3,6); plot(td1(:,6),'LineWidth',2,'Color','r'); title(name{6});
+subplot(3,3,7); plot(td1(:,7),'LineWidth',2,'Color','r'); title(name{7});
+subplot(3,3,8); plot(td1(:,8),'LineWidth',2); title(name{8});
+subplot(3,3,9); plot(td1(:,9),'LineWidth',2); title(name{9});
+faxes = findobj(f,'Type','Axes');
+for i=1:length(faxes)
+    xlabel(faxes(i),'sec','FontSize',9)
+    ylabel(faxes(i),'number of CB','FontSize',9)
+    set(faxes(i),'FontSize',7)
+    xlim(faxes(i),[0 xend]);
+end
+imgname = strcat(outdir,'/',fname,'_pic_2_RH80_no100_no139','.png');
+set(gcf,'visible','off')
+print(gcf,'-dpng','-r300',imgname);
