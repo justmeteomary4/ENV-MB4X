@@ -10,16 +10,10 @@ td1 = f.data;
 for i = 1:numel(f.colheaders)
     header{i} = f.colheaders{i}(2:end); % read headers from 2nd letter
 end
-plnames = {'O3' 'HO' 'HO2' 'H2O2' 'NO' 'NO2' 'HONO2' 'HCO' 'CH3O2' 'CH3OOH' 'HCHO' 'CO'};
-cvec       = {'r'      'r'      'r'        'r'    'r'      'r'         'b'          'b'         'b'         'b'           'r'      'r'};
-nrows = 3;
+plnames = {'O3' 'O1D' 'HO' 'HO2' 'H2O2' 'NO' 'NO2' 'HONO2' 'CH3O' 'CH3O2' 'CH3OOH' 'HCHO' 'HCO' 'CO' 'CO2' 'CH4'};
+cvec       = {'r'      'r'      'r'      'r'       'b'     'r'      'r'        'b'         'b'         'b'           'b'         'b'        'r'      'r'     'b'     'b'};
+nrows = 4;
 ncols = 4;
-%% Calculate number of carbon bonds,
-% i.e. fluxes through reactions where carbon bond is broken and peroxy radical is
-% produced, namely:
-% HCO+O2 = CO+HO2
-% CH3O+O2 = HCHO+HO2
-% CB = td1(:,13) + td1(:,14);
 %% Plot mixing ratios
 xend = 3600*24;%length(td1);
 fig=figure;
@@ -34,6 +28,6 @@ for i=1:length(faxes)
     set(faxes(i),'FontSize',7)
     xlim(faxes(i),[0 xend]);
 end
-imgname = strcat(outdir,'/',fname,'_pic_2_RH80_no100_no139','.png');
+imgname = strcat(outdir,'/',fname,'_pic_11_noHNO3','.png');
 set(gcf,'visible','off')
 print(gcf,'-dpng','-r300',imgname);
