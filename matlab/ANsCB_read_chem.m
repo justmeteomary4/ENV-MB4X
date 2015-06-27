@@ -3,7 +3,7 @@
 clear; clc;
 indir = '..';
 outdir = 'ANsCB_pics';
-fname = 'chem_0';
+fname = 'chem_0_00';
 fnamelong = [indir,'/',fname,'.dat'];
 f = importdata(fnamelong,' ',2);
 td1 = f.data;
@@ -28,6 +28,6 @@ for i=1:length(faxes)
     set(faxes(i),'FontSize',7)
     xlim(faxes(i),[0 xend]);
 end
-imgname = strcat(outdir,'/',fname,'_pic_11_noHNO3','.png');
+imgname = strcat(outdir,'/',fname,'.png');
 set(gcf,'visible','off')
 print(gcf,'-dpng','-r300',imgname);
