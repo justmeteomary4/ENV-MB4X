@@ -64,19 +64,6 @@ prod{12} = 3*td(:,19); % CH3ONO2
 compnames = {'CO' 'CH4' 'CH2OH' 'CH2OOH' 'CH3' 'CH3O' 'CH3O2' 'CH3OH' ...
     'CH3OOH' 'HCO' 'HCHO' 'CH3ONO2'};
 step = 'sec';
-
-% figure; plot(reac_CO,'b'); hold on; plot(prod_CO,'r'); title('CO'); hold off;
-% figure; plot(reac_CH4,'b'); title('CH4');
-% figure; plot(reac_CH2OH,'b'); hold on; plot(prod_CH2OH,'r'); title('CH2OH'); hold off;
-% figure; plot(reac_CH2OOH,'b'); hold on; plot(prod_CH2OOH,'r'); title('CH2OOH'); hold off;
-% figure; plot(reac_CH3,'b'); hold on; plot(prod_CH3,'r'); title('CH3'); hold off;
-% figure; plot(reac_CH3O,'b'); hold on; plot(prod_CH3O,'r'); title('CH3O'); hold off;
-% figure; plot(reac_CH3O2,'b'); hold on; plot(prod_CH3O2,'r'); title('CH3O2'); hold off;
-% figure; plot(reac_CH3OH,'b'); hold on; plot(prod_CH3OH,'r'); title('CH3OH'); hold off;
-% figure; plot(reac_CH3OOH,'b'); hold on; plot(prod_CH3OOH,'r'); title('CH3OOH'); hold off;
-% figure; plot(reac_HCO,'b'); hold on; plot(prod_HCO,'r'); title('HCO'); hold off;
-% figure; plot(reac_HCHO,'b'); hold on; plot(prod_HCHO,'r'); title('HCHO'); hold off;
-% figure; plot(reac_CH3ONO2,'b'); hold on; plot(prod_CH3ONO2,'r'); title('CH3ONO2'); hold off;
 for in = 1:length(compnames)
     figure;
     plot(reac{in},'b'); hold on; plot(prod{in},'r'); title(compnames{in}); hold off;
