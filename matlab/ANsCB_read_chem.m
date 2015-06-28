@@ -10,10 +10,10 @@ td1 = f.data;
 for i = 1:numel(f.colheaders)
     header{i} = f.colheaders{i}(2:end); % read headers from 2nd letter
 end
-plnames = {'O3' 'O1D' 'HO' 'HO2' 'H2O2' 'NO' 'NO2' 'HONO2' 'CH3O' 'CH3O2' 'CH3OOH' 'HCHO' 'HCO' 'CO' 'CO2' 'CH4'};
-cvec       = {'r'      'r'      'r'      'r'       'b'     'r'      'r'        'b'         'b'         'b'           'b'         'b'        'r'      'r'     'b'     'b'};
+plnames = {'O3' 'O1D' 'HO' 'HO2' 'H2O2' 'NO' 'NO2' 'CH3ONO2' 'CH3O' 'CH3O2' 'CH3OOH' 'HCHO' 'HCO' 'CO' 'CO2' 'CH4' 'C2H5ONO2'};
+cvec       = {'r'      'r'      'r'      'r'       'b'     'r'      'r'        'b'         'b'         'b'           'b'         'b'        'r'      'r'     'b'     'b'          'b'};
 nrows = 4;
-ncols = 4;
+ncols = 5;
 %% Plot mixing ratios
 xend = 3600*24;%length(td1);
 fig=figure;
