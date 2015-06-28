@@ -1,5 +1,5 @@
-EXECUTE OPEN 7 "chem_0_00.dat" UNKNOWN;
-EXECUTE OPEN 8 "flux_0_00.dat" UNKNOWN;
+EXECUTE OPEN 7 "chem_0_02.dat" UNKNOWN;
+EXECUTE OPEN 8 "flux_0_02.dat" UNKNOWN;
 * Time: 01.07.15;
 * Location: 45N 30W;
 * Meteorological conditions: clear sky, dry, T [K], RH [%];
@@ -9,7 +9,8 @@ VARIABLE
 CO CO2 CH4 
 H H2 O O1D O3 HO HO2 H2O2 NO NO2 HONO2 NO3 HNO3
 CH2OH CH2OOH CH3 CH3O CH3O2 CH3OH CH3OOH HCO HCHO 
-CH3ONO2;
+CH3ONO2 C2H5ONO2
+C2H5O C2H5O2 CH3CHO;
 PARAMETER 
 H2O 
 M 2.431E+19 
@@ -22,11 +23,13 @@ MCH3ONO2 MHCO MHCHO MCO MCO2 MCH4 MHONO2 MO1D;
 PARAMETER
 KO3 KO12 KO13 KO25 KO36 KO53 KO86 KO95 KO97 KO100 KO120 KOMCM1 KO139A
 KO139B KO197A KO197B KO209
-KO40 KOMCM2 KO211;
+KO40 KOMCM2 KO211
+KO41 KO212;
 VARIABLE 
 FKO3 FKO12 FKO13 FKO25 FKO36 FKO53 FKO86 FKO95 FKO97 FKO100 FKO120 
 FKOMCM1 FKO139A FKO139B FKO197A FKO197B FKO209
-FKO40 FKOMCM2 FKO211;
+FKO40 FKOMCM2 FKO211
+FKO41 FKO212;
 
 COMPILE INITIAL;
 CO = 2.431E+12; 
@@ -92,7 +95,10 @@ KO97  % 9.7D-12                     : CH2OH+O2 = HCHO+HO2;
 KO100 % 1.9D-15                     : CH3O+O2 = HCHO+HO2;
 *---RO2 reactions------------------------------------------------------;
 KO120 % 7.7D-12                     : CH3O2+NO = CH3O+NO2;
+
 KOMCM1% 2.3D-12*EXP(360/T)*0.999    : CH3O2+NO = CH3O+NO2;      *MCMv3.3;
+KOMCM4% 2.55D-12*EXP(380/TEMP)*0.991: C2H5O2+NO = C2H5O+NO2;    *MCMv3.3;
+
 KO139A% 3.5D-13                     : CH3O2+CH3O2 = CH3OH+HCHO;
 KO139B% 1.3D-13                     : CH3O2+CH3O2 = CH3O+CH3O;
 *---Photolysis---------------------------------------------------------;
@@ -104,6 +110,10 @@ KO209 % 2.83D-6                     : CH3OOH = CH3O+HO;         *J 2.83D-6 24hou
 *KO40  % 2.3D-14                     : HO+CH3ONO2 = HCHO+NO2;    *Atkinson2006 and MCMv3.3;
 *KOMCM2% 2.3D-12*EXP(360/T)*0.001    : CH3O2+NO = CH3ONO2;       *MCMv3.3;
 *KO211 % 5.56D-7                     : CH3ONO2 = CH3O+NO2;       *J 5.56D-7 24hour average MCMv3.3, 1.6D-6 BrasseurTextbook1999;
+*---Ethyl nitrate (2)--------------------------------------------------;
+KO41  % 1.8D-13                     : HO+C2H5ONO2 = CH3CHO+NO2;  *Atkinson2006 and MCMv3.3;
+KOMCM3% 2.55D-12*EXP(380/TEMP)*0.009: C2H5O2+NO = C2H5ONO2;
+KO212 % 9.53D-6                     : C2H5ONO2 = C2H5O+NO2;      *J MCMv3.3;
 *---Fluxes-------------------------------------------------------------;
 = KO3                         : = FKO3;
 = KO12                        : = FKO12;
@@ -126,6 +136,9 @@ KO209 % 2.83D-6                     : CH3OOH = CH3O+HO;         *J 2.83D-6 24hou
 = KO40                        : = FKO40;
 = KOMCM2                      : = FKOMCM2;
 = KO211                       : = FKO211;
+
+= KO41                        : = FKO41;
+= KO212                       : = FKO212;
 **;
 
 WHEN
@@ -163,7 +176,7 @@ TIME=0+1*86400 % CALL TABLE;
 *----------------------------------------------------------------------;
 SETPSTREAM 3 7 18;
 MCO MCO2 MCH4 MO1D MO3 MHO MHO2 MH2O2 MNO MNO2 MHONO2 
-MCH3O MCH3O2 MCH3OOH MHCHO MCH3ONO2 MHCO H2O;
+MCH3O MCH3O2 MCH3OOH MHCHO MCH3ONO2 MHCO C2H5ONO2;
 **;
 SETPSTREAM 4 8 20;
 FKO3 FKO12 FKO13 FKO25 FKO36 FKO53 FKO86 FKO95 FKO97 FKO100 FKO120 
