@@ -1,5 +1,5 @@
-EXECUTE OPEN 7 "chem_0_02.dat" UNKNOWN;
-EXECUTE OPEN 8 "flux_0_02.dat" UNKNOWN;
+EXECUTE OPEN 7 "chem_0_00_test.dat" UNKNOWN;
+EXECUTE OPEN 8 "flux_0_00_test.dat" UNKNOWN;
 * Time: 01.07.15;
 * Location: 45N 30W;
 * Meteorological conditions: clear sky, dry, T [K], RH [%];
@@ -7,9 +7,9 @@ PARAMETER T 298 RH 80;
 
 VARIABLE
 CO CO2 CH4 
-H H2 O O1D O3 HO HO2 H2O2 NO NO2 HONO2 NO3 HNO3
+H H2 O O1D O3 HO HO2 H2O2 NO NO2 HNO3 NO3 HNO3
 CH2OH CH2OOH CH3 CH3O CH3O2 CH3OH CH3OOH HCO HCHO 
-CH3ONO2 C2H5ONO2
+CH3NO3 C2H5NO3
 C2H5O C2H5O2 CH3CHO;
 PARAMETER 
 H2O 
@@ -18,18 +18,20 @@ O2 5.092E+18
 N2 1.898E+19;
 PARAMETER
 MO3 MHO MNO MNO2 MHO2 MH2O2 MCH3O MCH3O2 MCH3OOH 
-MCH3ONO2 MHCO MHCHO MCO MCO2 MCH4 MHONO2 MO1D;
+MCH3NO3 MC2H5NO3 MHCO MHCHO MCO MCO2 MCH4 MHNO3 MO1D;
 *---Fluxes-------------------------------------------------------------;
 PARAMETER
-KO3 KO12 KO13 KO25 KO36 KO53 KO86 KO95 KO97 KO100 KO120 KOMCM1 KO139A
-KO139B KO197A KO197B KO209
-KO40 KOMCM2 KO211
-KO41 KO212;
+RO3 RO12 RO13 RO25 RO36 RO53 RO86 RO95 RO97 RO100 RO120 ROMCM1 RO139A
+RO139B RO197A RO197B RO209
+RO40 ROMCM2 RO211
+RO41 RO212;
 VARIABLE 
-FKO3 FKO12 FKO13 FKO25 FKO36 FKO53 FKO86 FKO95 FKO97 FKO100 FKO120 
-FKOMCM1 FKO139A FKO139B FKO197A FKO197B FKO209
-FKO40 FKOMCM2 FKO211
-FKO41 FKO212;
+FRO3 FRO12 FRO13 FRO25 FRO36 FRO53 FRO86 FRO95 FRO97 FRO100 FRO120 
+FROMCM1 FRO139A FRO139B FRO197A FRO197B FRO209
+FRO40 FROMCM2 FRO211
+FRO41 FRO212;
+PARAMETER
+KI22 KI2627;
 
 COMPILE INITIAL;
 CO = 2.431E+12; 
@@ -43,102 +45,112 @@ NO2 = 2.431E+7;
 COMPILE INSTANT;
 H2O = 6.1078*EXP(-1.0D0*(597.3-0.57*(T-273.16))*
 18./1.986*(1./T-1./273.16))*10./(1.38D-16*T)*RH;
+?KI22 = (6.9D-31*N2*(T/300)@-0.8*2.6D-11*0.5)/
+(6.9D-31*N2*(T/300)@-0.8+2.6D-11);
+?KI2627 = 1+(1.4D-21*EXP(2200/T)*H2O);
 **;
 
 COMPILE EQUATIONS;
 * Control experiment (0);
 *-------------------------------INORGANIC------------------------------;
 *---Ox reactions-------------------------------------------------------;
-KI1A  % 6.0D-34*O2                  : O+O2 = O3;
-KI1B  % 5.6D-34*N2                  : O+O2 = O3;
-*KI2   % 8.0D-15                     : O+O3 = ;
-KI3   % 4.0D-11                     : O1D+O2 = O;
-KI12  % 1.71D-5                     : O3 = O1D;                 *J 1.71D-5 24hour average MCMv3.3, 2.0D-6 ANsNEW;
-*% 2.39D-4                           : O3 = O;                   *J 2.39D-4 24hour average MCMv3.3;
+RI1A  % 6.0D-34*O2*(T/300)@-2.6*O2  : O = O3;
+RI1B  % 5.6D-34*N2*(T/300)@-2.6*O2  : O = O3;
+*RI2   % 8.0D-12*EXP(-2060/T)        : O+O3 = ;
+RI3   % 3.2D-11*EXP(67/T)*O2        : O1D = O;
+RI12  % 1.71D-5                     : O3 = O1D;                         *J 1.71D-5 24hour average MCMv3.3, 2.0D-6 ANsNEW;
+*% 2.39D-4                           : O3 = O;                   *? J 2.39D-4 24hour average MCMv3.3;
 *---HOx reactions------------------------------------------------------;
-KI14  % 5.4D-32*N2                  : H+O2 = HO2;
-KI16  % 5.8D-11                     : O+HO2 = HO;
-KI19  % 2.2D-10                     : O1D+H2O = HO+HO;
-KI21  % 1.48D-12                    : HO+HO = O;
-KI22  % (6.9D-31*N2*2.6D-11*0.5)/(6.9D-31*N2+2.6D-11): HO+HO = H2O2;
-KI23  % 1.1D-10                     : HO+HO2 = ;
-KI24  % 1.7D-12                     : HO+H2O2 = HO2;
-KI25  % 7.3D-14                     : HO+O3 = HO2;
-KI26  % 1.6D-12*(1+1.4D-21*H2O*EXP(2200/T))    : HO2+HO2 = H2O2;
-KI27  % 5.2D-32*N2*(1+1.4D-21*H2O*EXP(2200/T)) : HO2+HO2 = H2O2;
-KI28  % 2.0D-15                     : HO2+O3 = HO;
-KI30  % 3.86D-6                     : H2O2 = HO+HO;             *J 3.86D-6 24hour average MCMv3.3;
+RI14  % 5.4D-32*N2*(T/300)-1.8*O2   : H = HO2;                  *not in MCM;
+RI16  % 2.7D-11*EXP(224/T)          : O+HO2 = HO;               *not in MCM;
+RI19  % 2.2D-10*H2O                 : O1D = HO+HO;
+RI21  % 6.2D-14*(T/298)@2.6*EXP(945/T): HO+HO = O;              *H2O, not in MCM;
+RI22  % KI22                        : HO+HO = H2O2;             *not in MCM;
+RI23  % 4.8D-11*EXP(250/T)          : HO+HO2 = ;
+RI24  % 2.9D-12*EXP(-160/T)         : HO+H2O2 = HO2;
+RI25  % 1.7D-12*EXP(-940/T)         : HO+O3 = HO2;
+RI26  % 2.2D-13*EXP(600/T)*KI2627   : HO2+HO2 = H2O2;
+RI27  % 1.9D-33*N2*EXP(980/T)*KI2627: HO2+HO2 = H2O2;
+RI28  % 2.03D-16*(T/300)@4.57*EXP(693/T): HO2+O3 = HO;
+RI30  % 3.86D-6                     : H2O2 = HO+HO;             *J 3.86D-6 24hour average MCMv3.3;
 *---NOx reactions------------------------------------------------------;
-KI36  % 2.6D-11                     : O1D+N2 = O;
-*KI43  % (3.3D-30*N2*4.1D-11*0.4)/(3.3D-30*N2+4.1D-11): HO+NO2 = HONO2;
-KI45  % 8.8D-12                     : HO2+NO = HO+NO2;
-KI54  % 1.8D-14                     : NO+O3 = NO2;
-*KI66  % 3.31D-7                     : HONO2 = NO2+HO;           *J 3.31D-7 24hour average MCMv3.3;
-KI68  % 4.4D-3                      : NO2 = NO+O;               *J 4.4D-3 24hour average MCMv3.3, 1.0D-3 ANsNEW;
+RI36  % 1.8D-11*EXP(107/T)*N2       : O1D = O;
+*RI43  % ?(3.3D-30*N2*4.1D-11*0.4)/(3.3D-30*N2+4.1D-11): HO+NO2 = HNO3;
+RI45  % 3.6D-12*EXP(270/T)          : HO2+NO = HO+NO2;
+RI54  % 1.4D-12*EXP(-1310/T)        : NO+O3 = NO2;
+*RI66  % ?3.31D-7                     : HNO3 = NO2+HO;           *J 3.31D-7 24hour average MCMv3.3;
+RI68  % 4.4D-3                      : NO2 = NO+O;               *J 4.4D-3 24hour average MCMv3.3, 1.0D-3 ANsNEW;
 *-------------------------------ORGANIC--------------------------------;
 *---HO reactions-------------------------------------------------------;
-KO3   % 6.4D-15                     : HO+CH4 = CH3;
-KO12  % 1.44D-13*(1+(N2/4.2D+19))   : HO+CO = H+CO2;
-KO13  % 8.5D-12                     : HO+HCHO = HCO;
-KO25  % 9.0D-13                     : HO+CH3OH = *0.85:CH2OH,
-                                                 *0.15:CH3O;
-KO36  % 5.5D-12                     : HO+CH3OOH = *0.35:CH2OOH,
+RO3   % 1.85D-12*EXP(-1690/T)       : HO+CH4 = CH3;             *CH3O2 in MCM;
+RO12  % 1.44D-13*(1+(N2/4.2D+19))   : HO+CO = H+CO2;            *HO2 in MCM,M;
+RO13  % 5.4D-12*EXP(135/T)          : HO+HCHO = HCO;            *HO2+CO in MCM;
+RO25  % 2.85D-12*EXP(-345/T)        : HO+CH3OH = *0.85:CH2OH,   
+                                                 *0.15:CH3O;    *HO2+HCHO in MCM;
+RO36  % 5.5D-12                     : HO+CH3OOH = *0.35:CH2OOH,
                                                   *0.65:CH3O2;
+*% 5.3D-12*EXP(190/TEMP)*0.6 : OH + CH3OOH = CH3O2 ;           *in MCM;
+*% 5.3D-12*EXP(190/TEMP)*0.4 : OH + CH3OOH = HCHO + OH ;
 *---HO2 reactions------------------------------------------------------;
-KO53  % 5.2D-12                     : HO2+CH3O2 = *0.9:CH3OOH,
+RO53  % 3.8D-13*EXP(780/T)          : HO2+CH3O2 = *0.9:CH3OOH,
                                                   *0.1:HCHO;
+*% 3.8D-13*EXP(780/TEMP)*(1-1/(1+498*EXP(-1160/TEMP))) : CH3O2 + HO2 =
+CH3OOH ;
+*% 3.8D-13*EXP(780/TEMP)*(1/(1+498*EXP(-1160/TEMP))) : CH3O2 + HO2 =
+HCHO ;
 *---Carbon radicals reactions------------------------------------------;
-KO86  % (1.0D-30*N2*1.8D-12*0.27)/(1.0D-30*N2+1.8D-12): CH3+O2 = CH3O2;
-KO95  % 5.1D-12                     : HCO+O2 = CO+HO2;
-KO97  % 9.7D-12                     : CH2OH+O2 = HCHO+HO2;
+RO86  % (1.0D-30*N2*1.8D-12*0.27)/(1.0D-30*N2+1.8D-12): CH3+O2 = CH3O2;*? not in MCM;
+RO95  % 5.1D-12                     : HCO+O2 = CO+HO2;                 *not in MCM;
+RO97  % 9.7D-12                     : CH2OH+O2 = HCHO+HO2;             *not in MCM;
 *---RO reactions-------------------------------------------------------;
-KO100 % 1.9D-15                     : CH3O+O2 = HCHO+HO2;
+RO100 % 7.2D-14*EXP(-1080/T)*O2     : CH3O = HCHO+HO2;
 *---RO2 reactions------------------------------------------------------;
-KO120 % 7.7D-12                     : CH3O2+NO = CH3O+NO2;
+ROMCM1% 2.3D-12*EXP(360/T)*0.999    : CH3O2+NO = CH3O+NO2;      *MCMv3.3;
+ROMCM4% 2.55D-12*EXP(380/T)*0.991   : C2H5O2+NO = C2H5O+NO2;    *MCMv3.3;
 
-KOMCM1% 2.3D-12*EXP(360/T)*0.999    : CH3O2+NO = CH3O+NO2;      *MCMv3.3;
-KOMCM4% 2.55D-12*EXP(380/TEMP)*0.991: C2H5O2+NO = C2H5O+NO2;    *MCMv3.3;
-
-KO139A% 3.5D-13                     : CH3O2+CH3O2 = CH3OH+HCHO;
-KO139B% 1.3D-13                     : CH3O2+CH3O2 = CH3O+CH3O;
+RO139A% 3.5D-13                     : CH3O2+CH3O2 = CH3OH+HCHO;
+RO139B% 1.3D-13                     : CH3O2+CH3O2 = CH3O+CH3O;
+*% 2*KCH3O2*RO2*7.18*EXP(-885/TEMP) : CH3O2 = CH3O ;
+*% 2*KCH3O2*RO2*0.5*(1-7.18*EXP(-885/TEMP)) : CH3O2 = CH3OH ;
+*% 2*KCH3O2*RO2*0.5*(1-7.18*EXP(-885/TEMP)) : CH3O2 = HCHO ;
 *---Photolysis---------------------------------------------------------;
-KO197A% 1.55D-5                     : HCHO = HCO+H;             *J MCMv3.3;
-KO197B% 2.38D-5                     : HCHO = CO+H2;             *J 2.38D-5 MCMv3.3;
-KO209 % 2.83D-6                     : CH3OOH = CH3O+HO;         *J 2.83D-6 24hour average MCMv3.3, 6.5D-6 BrasseurTextbook1999;
+RO197A% 1.55D-5                     : HCHO = HCO+H;             *CO+HO2+HO2,J MCMv3.3;
+RO197B% 2.38D-5                     : HCHO = CO+H2;             *J 2.38D-5 MCMv3.3;
+RO209 % 2.83D-6                     : CH3OOH = CH3O+HO;         *J 2.83D-6 24hour average MCMv3.3, 6.5D-6 BrasseurTextbook1999;
 *-------------------------------ALKYL NITRATES-------------------------;
 *---Methyl nitrate (1)-------------------------------------------------;
-*KO40  % 2.3D-14                     : HO+CH3ONO2 = HCHO+NO2;    *Atkinson2006 and MCMv3.3;
-*KOMCM2% 2.3D-12*EXP(360/T)*0.001    : CH3O2+NO = CH3ONO2;       *MCMv3.3;
-*KO211 % 5.56D-7                     : CH3ONO2 = CH3O+NO2;       *J 5.56D-7 24hour average MCMv3.3, 1.6D-6 BrasseurTextbook1999;
+*ROMCM2% 2.3D-12*EXP(360/T)*0.001    : CH3O2+NO = CH3NO3;       *MCMv3.3;
+*RO40  % 4.0D-13*EXP(-845/T)         : HO+CH3NO3 = HCHO+NO2;    *Atkinson2006 and MCMv3.3;
+*RO211 % 5.56D-7                     : CH3NO3 = CH3O+NO2;       *J 5.56D-7 24hour average MCMv3.3, 1.6D-6 BrasseurTextbook1999;
 *---Ethyl nitrate (2)--------------------------------------------------;
-KO41  % 1.8D-13                     : HO+C2H5ONO2 = CH3CHO+NO2;  *Atkinson2006 and MCMv3.3;
-KOMCM3% 2.55D-12*EXP(380/TEMP)*0.009: C2H5O2+NO = C2H5ONO2;
-KO212 % 9.53D-6                     : C2H5ONO2 = C2H5O+NO2;      *J MCMv3.3;
+*ROMCM3% 2.55D-12*EXP(380/T)*0.009   : C2H5O2+NO = C2H5NO3;
+*RO41  % 1.8D-13                     : HO+C2H5NO3 = CH3CHO+NO2;  *Atkinson2006 and MCMv3.3;
+*RO212 % 6.52D-7                     : C2H5NO3 = C2H5O+NO2;      *J 6.52D-7 MCMv3.3;
 *---Fluxes-------------------------------------------------------------;
-= KO3                         : = FKO3;
-= KO12                        : = FKO12;
-= KO13                        : = FKO13;
-= KO25                        : = FKO25;
-= KO36                        : = FKO36;
-= KO53                        : = FKO53;
-= KO86                        : = FKO86;
-= KO95                        : = FKO95;
-= KO97                        : = FKO97;
-= KO100                       : = FKO100;
-= KO120                       : = FKO120;
-= KOMCM1                      : = FKOMCM1;
-= KO139A                      : = FKO139A;
-= KO139B                      : = FKO139B;
-= KO197A                      : = FKO197A;
-= KO197B                      : = FKO197B;
-= KO209                       : = FKO209;
+= RO3                         : = FRO3;
+= RO12                        : = FRO12;
+= RO13                        : = FRO13;
+= RO25                        : = FRO25;
+= RO36                        : = FRO36;
+= RO53                        : = FRO53;
+= RO86                        : = FRO86;
+= RO95                        : = FRO95;
+= RO97                        : = FRO97;
+= RO100                       : = FRO100;
+= RO120                       : = FRO120;
+= ROMCM1                      : = FROMCM1;
+= RO139A                      : = FRO139A;
+= RO139B                      : = FRO139B;
+= RO197A                      : = FRO197A;
+= RO197B                      : = FRO197B;
+= RO209                       : = FRO209;
 
-= KO40                        : = FKO40;
-= KOMCM2                      : = FKOMCM2;
-= KO211                       : = FKO211;
+* = RO40                        : = FRO40;
+* = ROMCM2                      : = FROMCM2;
+* = RO211                       : = FRO211;
 
-= KO41                        : = FKO41;
-= KO212                       : = FKO212;
+* = RO41                        : = FRO41;
+* = RO212                       : = FRO212;
 **;
 
 WHEN
@@ -158,13 +170,14 @@ MHO2 = HO2/M*1.0D+9;
 MH2O2 = H2O2/M*1.0D+9;
 MNO = NO/M*1.0D+9;
 MNO2 = NO2/M*1.0D+9;
-MHONO2 = HONO2/M*1.0D+9;
+MHNO3 = HNO3/M*1.0D+9;
 MCH3O = CH3O/M*1.0D+9;
 MCH3O2 = CH3O2/M*1.0D+9;
 MCH3OOH = CH3OOH/M*1.0D+9;
 MHCO = HCO/M*1.0D+9;
 MHCHO = HCHO/M*1.0D+9;
-MCH3ONO2 = CH3ONO2/M*1.0D+9;
+MCH3NO3 = CH3NO3/M*1.0D+9;
+MC2H5NO3 = C2H5NO3/M*1.0D+9;
 **;
 COMPILE TABLE;
 PSTREAM 3;
@@ -175,13 +188,13 @@ TIME=0+1*86400 % CALL TABLE;
 **;
 *----------------------------------------------------------------------;
 SETPSTREAM 3 7 18;
-MCO MCO2 MCH4 MO1D MO3 MHO MHO2 MH2O2 MNO MNO2 MHONO2 
-MCH3O MCH3O2 MCH3OOH MHCHO MCH3ONO2 MHCO C2H5ONO2;
+MCO MCO2 MCH4 MO1D MO3 MHO MHO2 MH2O2 MNO MNO2 MHNO3 
+MCH3O MCH3O2 MCH3OOH MHCHO MCH3NO3 MHCO MC2H5NO3;
 **;
 SETPSTREAM 4 8 20;
-FKO3 FKO12 FKO13 FKO25 FKO36 FKO53 FKO86 FKO95 FKO97 FKO100 FKO120 
-FKOMCM1 FKO139A FKO139B FKO197A FKO197B FKO209 
-FKO40 FKOMCM2 FKO211;
+FRO3 FRO12 FRO13 FRO25 FRO36 FRO53 FRO86 FRO95 FRO97 FRO100 FRO120 
+FROMCM1 FRO139A FRO139B FRO197A FRO197B FRO209 
+FRO40 FROMCM2 FRO211;
 **;
 BEGIN;
 STOP;
