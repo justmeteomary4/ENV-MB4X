@@ -3,15 +3,15 @@
 clear; clc;
 indir = '..';
 outdir = 'ANsCB_pics';
-fname = 'chem_0_00';
+fname = 'chem_1_01';
 fnamelong = [indir,'/',fname,'.dat'];
 f = importdata(fnamelong,' ',2);
 td1 = f.data;
 for i = 1:numel(f.colheaders)
     header{i} = f.colheaders{i}(2:end); % read headers from 2nd letter
 end
-plnames = {'O3' 'O1D' 'HO' 'HO2' 'H2O2' 'NO' 'NO2' 'CH3ONO2' 'CH3O' 'CH3O2' 'CH3OOH' 'HCHO' 'HCO' 'CO' 'CO2' 'CH4' 'C2H5ONO2'};
-cvec       = {'r'      'r'      'r'      'r'       'b'     'r'      'r'        'b'         'b'         'b'           'b'         'b'        'r'      'r'     'b'     'b'          'b'};
+plnames = {'O3' 'O1D' 'OH' 'NO' 'NO2' 'HO2' 'H2O2' 'CO' 'CH4' 'CH3O' 'CH3O2' 'HCHO' 'CH3OH' 'CH3OOH' 'C2H5O' 'CH3NO3' 'C2H5NO3'};
+% cvec   = {'r'      'r'      'r'      'r'       'b'     'r'      'r'        'b'         'b'         'b'           'b'         'b'        'r'      'r'     'b'     'b'          'b' 'b'};
 nrows = 4;
 ncols = 5;
 %% Plot mixing ratios
@@ -19,7 +19,8 @@ xend = 3600*24;%length(td1);
 fig=figure;
 for isub = 1:numel(plnames)
     j = find(ismember(header,plnames{isub}));
-    subplot(nrows,ncols,isub); plot(td1(:,j),'LineWidth',2,'Color',cvec{isub}); title(header{j});
+    subplot(nrows,ncols,isub); plot(td1(:,j),'LineWidth',2,'Color','b'); title(header{j});
+%     subplot(nrows,ncols,isub); plot(td1(:,j),'LineWidth',2,'Color',cvec{isub}); title(header{j});
 end
 faxes = findobj(fig,'Type','Axes');
 for i=1:length(faxes)
