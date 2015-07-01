@@ -1,5 +1,5 @@
-EXECUTE OPEN 7 "chem_1_01.dat" UNKNOWN;
-EXECUTE OPEN 8 "flux_1_01.dat" UNKNOWN;
+EXECUTE OPEN 7 "chem_1_02.dat" UNKNOWN;
+EXECUTE OPEN 8 "flux_1_02.dat" UNKNOWN;
 * Time: 01.07.15;
 * Location: 45N 30W;
 *---------------------------------METEO--------------------------------;
@@ -28,7 +28,7 @@ VARIABLE RO2;
 *---Methane (0_01);
 VARIABLE
 CH4 HCHO CH3O CH3O2 CH3OH CH3OOH CH3NO3;
-*---Ethane (1_01);
+*---Ethane (0_02);
 VARIABLE 
 C2H5NO3 C2H5O C2H5O2 C2H5OH C2H5OOH C2H6 CH3CHO CH3CO CH3CO2H CH3CO3 
 CH3CO3H ETHGLY ETHOHNO3 GLYOX HCOCH2O HCOCH2O2 HCOCH2OOH HCOCO HCOCO2H 
@@ -107,14 +107,12 @@ COMPILE EQUATIONS;
 *-------------------------------REACTIONS------------------------------;
 *-------------------------------INORGANIC------------------------------;
 *---Inorganic (0_00);
-*---Ox;
 RI1A  % 6.0D-34*O2*(T/300)@-2.6*O2  : O = O3;
 RI1B  % 5.6D-34*N2*(T/300)@-2.6*O2  : O = O3;
 RI2   % 8.0D-12*EXP(-2060/T)        : O+O3 = ;
 RI3   % 3.2D-11*EXP(67/T)*O2        : O1D = O;
 RI12  % J<1>                        : O3 = O1D; 
 *% J<2>                           : O3 = O;
-*---HOx;
 RI19  % 2.2D-10*H2O                 : O1D = OH+OH;
 RI20  % 7.7D-12*EXP(-2100/T)        : OH+H2 = HO2;
 RI23  % 4.8D-11*EXP(250/T)          : OH+HO2 = ;
@@ -124,30 +122,24 @@ RI26  % 2.2D-13*EXP(600/T)*KI2627   : HO2+HO2 = H2O2;
 RI27  % 1.9D-33*N2*EXP(980/T)*KI2627: HO2+HO2 = H2O2;
 RI28  % 2.03D-16*(T/300)@4.57*EXP(693/T): HO2+O3 = OH;
 RI30  % J<3>                        : H2O2 = OH+OH;
-*---NOx;
 RI36  % 1.8D-11*EXP(107/T)*N2       : O1D = O;
 RI45  % 3.6D-12*EXP(270/T)          : HO2+NO = OH+NO2;
 RI54  % 1.4D-12*EXP(-1310/T)        : NO+O3 = NO2;
 RI68  % J<4>                        : NO2 = NO+O;
 *--------------------------------ORGANIC-------------------------------;
 *---Methane (0_01);
-*---OH;
 RO3   % 1.85D-12*EXP(-1690/T)       : OH+CH4 = CH3O2; 
 RO12  % 1.44D-13*(1+(M/4.2D+19))    : OH+CO = HO2; 
 RO13  % 5.4D-12*EXP(135/T)          : OH+HCHO = HO2+CO; 
 RO25  % 2.85D-12*EXP(-345/T)        : OH+CH3OH = HO2+HCHO; 
 RO36A % 5.3D-12*EXP(190/T)*0.6      : OH+CH3OOH = CH3O2; 
 RO36B % 5.3D-12*EXP(190/T)*0.4      : OH+CH3OOH = HCHO+OH;    
-*---HO2;
 RO53A % 3.8D-13*EXP(780/T)*(1-1/(1+498*EXP(-1160/T))):HO2+CH3O2=CH3OOH; 
 RO53B % 3.8D-13*EXP(780/T)*(1/(1+498*EXP(-1160/T)))  :HO2+CH3O2=HCHO; 
-*---RO;
 RO100 % 7.2D-14*EXP(-1080/T)*O2     : CH3O = HCHO+HO2;
-*---RO2;
 ROMCM1% 2.3D-12*EXP(360/T)*0.999    : CH3O2+NO = CH3O+NO2; 
-RO139A% 1.0D-13*EXP(365/T)          : CH3O2+CH3O2 = CH3OH+HCHO;         *?;
+RO139A% 1.0D-13*EXP(365/T)          : CH3O2+CH3O2 = CH3OH+HCHO;*?;
 RO139B% 7.4D-13*EXP(-520/T)         : CH3O2+CH3O2 = CH3O+CH3O;
-*---Photolysis;
 RO197A% J<11>                       : HCHO = CO+HO2+HO2; 
 RO197B% J<12>                       : HCHO = CO+H2; 
 RO209 % J<41>                       : CH3OOH = CH3O+OH; 
@@ -237,11 +229,11 @@ ROMCM19% 3.70D-12                    : OH+CH3CO2H = CH3CO3;
 *---Methyl nitrate (1_01);
 ROMCM2% 2.3D-12*EXP(360/T)*0.001    : CH3O2+NO = CH3NO3;
 RO40  % 4.0D-13*EXP(-845/T)         : OH+CH3NO3 = HCHO+NO2;
-RO211 % J<51>                     : CH3NO3 = CH3O+NO2; 
+RO211 % J<51>                       : CH3NO3 = CH3O+NO2; 
 *---Ethyl nitrate (1_02);
-*ROMCM3% 2.55D-12*EXP(380/T)*0.009   : C2H5O2+NO = C2H5NO3;
-*RO41  % 6.7D-13*EXP(-395/T)         : OH+C2H5NO3 = CH3CHO+NO2;
-*RO212 % J<52>                       : C2H5NO3 = C2H5O+NO2;
+ROMCM3% 2.55D-12*EXP(380/T)*0.009   : C2H5O2+NO = C2H5NO3;
+RO41  % 6.7D-13*EXP(-395/T)         : OH+C2H5NO3 = CH3CHO+NO2;
+RO212 % J<52>                       : C2H5NO3 = C2H5O+NO2;
 *----------------------------------FLUXES------------------------------;
 = RO3                         : = FRO3;
 = RO12                        : = FRO12;
@@ -291,8 +283,12 @@ MCH3OH = CH3OH/M*1.0D+9;
 MCH3OOH = CH3OOH/M*1.0D+9;
 MHCHO = HCHO/M*1.0D+9;
 MCH3NO3 = CH3NO3/M*1.0D+9;
-MC2H5NO3 = C2H5NO3/M*1.0D+9;
+
+MC2H6 = C2H6/M*1.0D+9;
 MC2H5O = C2H5O/M*1.0D+9;
+MC2H5O2 = C2H5O2/M*1.0D+9;
+MC2H5NO3 = C2H5NO3/M*1.0D+9;
+
 **;
 COMPILE TABLE;
 PSTREAM 3;
@@ -302,10 +298,9 @@ WHENEVER
 TIME=0+1*86400 % CALL TABLE;
 **;
 *------------------------------OUTPUT----------------------------------;
-SETPSTREAM 3 7 19;
-MO1D MO3 MOH MHO2 MH2O2 MNO MNO2 MCO 
-MCH4 MHCHO MCH3O MCH3O2 MCH3OH MCH3OOH MCH3NO3 
-MC2H6 MC2H5O MC2H5NO3;
+SETPSTREAM 3 7 20;
+MO3 MO1D MOH MNO MNO2 MHO2 MH2O2 MCO MCH4 MC2H6 MCH3O MCH3O2 MC2H5O 
+MC2H5O2 MHCHO MCH3NO3  MC2H5NO3;
 **;
 SETPSTREAM 4 8 20;
 FRO3 FRO12 FRO13 FRO25 FRO36A FRO36B FRO53A FRO53B FRO100 FROMCM1 
