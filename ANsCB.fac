@@ -25,15 +25,15 @@ RI36 RI45 RI45 RI54 RI68;
 
 *--------------------------------ORGANIC-------------------------------;
 VARIABLE RO2;
-*---CH4;
+*---Methane (0_01);
 VARIABLE
 CH4 HCHO CH3O CH3O2 CH3OH CH3OOH CH3NO3;
-*---C2H6;
+*---Ethane (1_01);
 VARIABLE 
-C2H6 C2H5O C2H5O2 CH3CHO C2H5NO3 
-C2H5OH C2H5OOH CH3CO CH3CO2H CH3CO3 CH3CO3H HCOCH2O2 HOCH2CH2O2 
-HYETHO2H ETHGLY GLYOX ETHOHNO3 HOCH2CO3 HCOCO3 HOCH2CH2O HOCH2CHO 
-HCOCH2OOH HCOCH2O HCOCO HOCH2CO2H HOCH2CO3H HCOCO2H HCOCO3H;
+C2H5NO3 C2H5O C2H5O2 C2H5OH C2H5OOH C2H6 CH3CHO CH3CO CH3CO2H CH3CO3 
+CH3CO3H ETHGLY ETHOHNO3 GLYOX HCOCH2O HCOCH2O2 HCOCH2OOH HCOCO HCOCO2H 
+HCOCO3 HCOCO3H HOCH2CH2O HOCH2CH2O2 HOCH2CHO HOCH2CO2H HOCH2CO3 
+HOCH2CO3H HYETHO2H;
 *---Mixing ratios;
 PARAMETER
 MCH4 MHCHO MCH3O MCH3O2 MCH3OH MCH3OOH MCH3NO3 
@@ -64,7 +64,8 @@ CH4 = 4.375E+13;
 C2H6 = 2.431E+10;
 **;
 
-PARAMETER <56> J 
+PARAMETER <57> J 
+0.00E+00 
 1.71E-05 2.39E-04 3.86E-06 4.39E-03 1.19E-02 8.14E-02 9.67E-04 3.31E-07 
 0.00E+00 0.00E+00 1.55E-05 2.38E-05 2.24E-06 9.53E-06 9.50E-06 5.70E-06 
 2.60E-05 5.34E-07 5.34E-07 2.74E-04 2.99E-07 1.87E-06 8.76E-07 8.76E-07 
@@ -111,8 +112,8 @@ RI1A  % 6.0D-34*O2*(T/300)@-2.6*O2  : O = O3;
 RI1B  % 5.6D-34*N2*(T/300)@-2.6*O2  : O = O3;
 RI2   % 8.0D-12*EXP(-2060/T)        : O+O3 = ;
 RI3   % 3.2D-11*EXP(67/T)*O2        : O1D = O;
-RI12  % 1.71D-5                     : O3 = O1D;                         *J 1.71D-5 MCMv3.3, 2.0D-6 ANsNEW;
-*% 2.39D-4                           : O3 = O;                          *? J 2.39D-4 MCMv3.3;
+RI12  % J<1>                        : O3 = O1D; 
+*% J<2>                           : O3 = O;
 *---HOx;
 RI19  % 2.2D-10*H2O                 : O1D = OH+OH;
 RI20  % 7.7D-12*EXP(-2100/T)        : OH+H2 = HO2;
@@ -122,54 +123,60 @@ RI25  % 1.7D-12*EXP(-940/T)         : OH+O3 = HO2;
 RI26  % 2.2D-13*EXP(600/T)*KI2627   : HO2+HO2 = H2O2;
 RI27  % 1.9D-33*N2*EXP(980/T)*KI2627: HO2+HO2 = H2O2;
 RI28  % 2.03D-16*(T/300)@4.57*EXP(693/T): HO2+O3 = OH;
-RI30  % 3.86D-6                     : H2O2 = OH+OH;                     *J 3.86D-6 MCMv3.3;
+RI30  % J<3>                        : H2O2 = OH+OH;
 *---NOx;
 RI36  % 1.8D-11*EXP(107/T)*N2       : O1D = O;
 RI45  % 3.6D-12*EXP(270/T)          : HO2+NO = OH+NO2;
 RI54  % 1.4D-12*EXP(-1310/T)        : NO+O3 = NO2;
-RI68  % 4.4D-3                      : NO2 = NO+O;                       *J 4.4D-3 MCMv3.3, 1.0D-3 ANsNEW;
+RI68  % J<4>                        : NO2 = NO+O;
 *--------------------------------ORGANIC-------------------------------;
 *---Methane (0_01);
 *---OH;
-RO3   % 1.85D-12*EXP(-1690/T)       : OH+CH4 = CH3O2;                   *MCMv3.3;
-RO12  % 1.44D-13*(1+(M/4.2D+19))    : OH+CO = HO2;                      *MCMv3.3;
-RO13  % 5.4D-12*EXP(135/T)          : OH+HCHO = HO2+CO;                 *MCMv3.3;
-RO25  % 2.85D-12*EXP(-345/T)        : OH+CH3OH = HO2+HCHO;              *MCMv3.3;
-RO36A % 5.3D-12*EXP(190/T)*0.6      : OH+CH3OOH = CH3O2;                *MCMv3.3;
-RO36B % 5.3D-12*EXP(190/T)*0.4      : OH+CH3OOH = HCHO+OH;              *MCMv3.3;   
+RO3   % 1.85D-12*EXP(-1690/T)       : OH+CH4 = CH3O2; 
+RO12  % 1.44D-13*(1+(M/4.2D+19))    : OH+CO = HO2; 
+RO13  % 5.4D-12*EXP(135/T)          : OH+HCHO = HO2+CO; 
+RO25  % 2.85D-12*EXP(-345/T)        : OH+CH3OH = HO2+HCHO; 
+RO36A % 5.3D-12*EXP(190/T)*0.6      : OH+CH3OOH = CH3O2; 
+RO36B % 5.3D-12*EXP(190/T)*0.4      : OH+CH3OOH = HCHO+OH;    
 *---HO2;
-RO53A % 3.8D-13*EXP(780/T)*(1-1/(1+498*EXP(-1160/T))):HO2+CH3O2=CH3OOH; *MCMv3.3;
-RO53B % 3.8D-13*EXP(780/T)*(1/(1+498*EXP(-1160/T)))  :HO2+CH3O2=HCHO;   *MCMv3.3;
+RO53A % 3.8D-13*EXP(780/T)*(1-1/(1+498*EXP(-1160/T))):HO2+CH3O2=CH3OOH; 
+RO53B % 3.8D-13*EXP(780/T)*(1/(1+498*EXP(-1160/T)))  :HO2+CH3O2=HCHO; 
 *---RO;
 RO100 % 7.2D-14*EXP(-1080/T)*O2     : CH3O = HCHO+HO2;
 *---RO2;
-ROMCM1% 2.3D-12*EXP(360/T)*0.999    : CH3O2+NO = CH3O+NO2;              *MCMv3.3;
+ROMCM1% 2.3D-12*EXP(360/T)*0.999    : CH3O2+NO = CH3O+NO2; 
 RO139A% 1.0D-13*EXP(365/T)          : CH3O2+CH3O2 = CH3OH+HCHO;         *?;
 RO139B% 7.4D-13*EXP(-520/T)         : CH3O2+CH3O2 = CH3O+CH3O;
 *---Photolysis;
-RO197A% 1.55D-5                     : HCHO = CO+HO2+HO2;                *J 1.55D-5 MCMv3.3;
-RO197B% 2.38D-5                     : HCHO = CO+H2;                     *J 2.38D-5 MCMv3.3;
-RO209 % 2.83D-6                     : CH3OOH = CH3O+OH;                 *J 2.83D-6 MCMv3.3, 6.5D-6 BrasseurTextbook1999;
+RO197A% J<11>                       : HCHO = CO+HO2+HO2; 
+RO197B% J<12>                       : HCHO = CO+H2; 
+RO209 % J<41>                       : CH3OOH = CH3O+OH; 
 *---Ethane (0_02);
 RO6    % 6.9D-12*EXP(-1000/T)        : OH+C2H6 = C2H5O2;
+RO55   % 3.8D-13*EXP(900/T)          : HO2+C2H5O2 = C2H5OOH;
+ROMCM4 % 2.55D-12*EXP(380/T)*0.991   : C2H5O2+NO = C2H5O+NO2;
+% 2*(KCH3O2*6.4D-14*(T/300)@0*EXP(0/T))@0.5*RO2*0.6:C2H5O2=C2H5O;
+% 2*(KCH3O2*6.4D-14*(T/300)@0*EXP(0/T))@0.5*RO2*0.2:C2H5O2=C2H5OH;
+% 2*(KCH3O2*6.4D-14*(T/300)@0*EXP(0/T))@0.5*RO2*0.2:C2H5O2=CH3CHO;
+ROMCM5% J<41>                       : C2H5OOH = C2H5O+OH;
+ROMCM6 % 1.90D-12*EXP(190/T)         : OH+C2H5OOH = C2H5O2;
+ROMCM7 % 8.01D-12                    : OH+C2H5OOH = CH3CHO+OH;
+RO101  % 2.4D-14*EXP(-325/T)*O2      : C2H5O = CH3CHO+HO2;
 ROMCM8 % 3.0D-12*EXP(20/T)*0.05      : OH+C2H5OH = C2H5O;
 ROMCM9 % 3.0D-12*EXP(20/T)*0.90      : OH+C2H5OH = CH3CHO+HO2;
 ROMCM10% 3.0D-12*EXP(20/T)*0.05      : OH+C2H5OH = HOCH2CH2O2;
-ROMCM6 % 1.90D-12*EXP(190/T)         : OH+C2H5OOH = C2H5O2;
-ROMCM7 % 8.01D-12                    : OH+C2H5OOH = CH3CHO+OH;
+ROMCM11% J<13>                      : CH3CHO = CH3O2+HO2+CO;
 RO14   % 4.7D-12*EXP(345/T)*0.95     : OH+CH3CHO = CH3CO;
 ROMCM12% 4.7D-12*EXP(345/T)*0.05     : OH+CH3CHO = HCOCH2O2;
-ROMCM18% 8.00D-13                    : OH+CH3CO2H = CH3O2;
-ROMCM19% 3.70D-12                    : OH+CH3CO2H = CH3CO3;
-RO55   % 3.8D-13*EXP(900/T)          : HO2+C2H5O2 = C2H5OOH;
-
-* -----------------------------New REACTIONS;
 % 1.53D-13*EXP(1300/T) : HOCH2CH2O2 + HO2 = HYETHO2H ;
 % KRO2NO*0.005 : HOCH2CH2O2 + NO = ETHOHNO3 ;
 % KRO2NO*0.995 : HOCH2CH2O2 + NO = HOCH2CH2O + NO2 ;
 % 2*(KCH3O2*7.8D-14*EXP(1000/T))@0.5*RO2*0.2 : HOCH2CH2O2 = ETHGLY;
 % 2*(KCH3O2*7.8D-14*EXP(1000/T))@0.5*RO2*0.6:HOCH2CH2O2 =HOCH2CH2O ;
-% 2*(KCH3O2*7.8D-14*EXP(1000/T))@0.5*RO2*0.2 : HOCH2CH2O2 =HOCH2CHO ;
+% 2*(KCH3O2*7.8D-14*EXP(1000/T))@0.5*RO2*0.2 : HOCH2CH2O2 =HOCH2CHO;
+ROMCM13% KAPHO2*0.15                 : HO2+CH3CO3 = CH3CO2H+O3;
+ROMCM14% KAPHO2*0.41                 : HO2+CH3CO3 = CH3CO3H;
+ROMCM15% KAPHO2*0.44                 : HO2+CH3CO3 = CH3O2+OH;
 % 7.5D-12*EXP(290/T) : CH3CO3 + NO = NO2 + CH3O2 ;
 % 2*(K298CH3O2*2.9D-12*EXP(500/T))@0.5*RO2*0.3 : CH3CO3 = CH3CO2H;
 % 2*(K298CH3O2*2.9D-12*EXP(500/T))@0.5*RO2*0.7 : CH3CO3 = CH3O2 ;
@@ -190,6 +197,9 @@ RO55   % 3.8D-13*EXP(900/T)          : HO2+C2H5O2 = C2H5OOH;
 % J<15> : HOCH2CHO = HO2 + HCHO + HO2 + CO ;
 % 3.70D-12 : CH3CO3H + OH = CH3CO3 ; 
 % J<41> : CH3CO3H = CH3O2 + OH ;
+ROMCM20% 2.83D-6                    : CH3CO3H = CH3O2+OH;
+ROMCM18% 8.00D-13                    : OH+CH3CO2H = CH3O2;
+ROMCM19% 3.70D-12                    : OH+CH3CO2H = CH3CO3;
 % 2.91D-11 : HCOCH2OOH + OH = GLYOX + OH ;
 % 1.90D-12*EXP(190/T) : HCOCH2OOH + OH = HCOCH2O2 ;
 % J<41> : HCOCH2OOH = HCOCH2O + OH ;
@@ -223,28 +233,11 @@ RO55   % 3.8D-13*EXP(900/T)          : HO2+C2H5O2 = C2H5OOH;
 % J<41> : HCOCO3H = HO2 + CO + OH ;
 % J<15> : HCOCO3H = HO2 + CO + OH ;
 % 1.58D-11 : OH + HCOCO3H = HCOCO3 ;
-
-ROMCM13% KAPHO2*0.15                 : HO2+CH3CO3 = CH3CO2H+O3;
-ROMCM14% KAPHO2*0.41                 : HO2+CH3CO3 = CH3CO3H;
-ROMCM15% KAPHO2*0.44                 : HO2+CH3CO3 = CH3O2+OH;
-RO101  % 2.4D-14*EXP(-325/T)*O2      : C2H5O = CH3CHO+HO2;
-ROMCM4 % 2.55D-12*EXP(380/T)*0.991   : C2H5O2+NO = C2H5O+NO2;
-
-% 2*(KCH3O2*6.4D-14*(T/300)@0*EXP(0/T))@0.5*RO2*0.6:C2H5O2=C2H5O;
-% 2*(KCH3O2*6.4D-14*(T/300)@0*EXP(0/T))@0.5*RO2*0.2:C2H5O2=C2H5OH;
-% 2*(KCH3O2*6.4D-14*(T/300)@0*EXP(0/T))@0.5*RO2*0.2:C2H5O2=CH3CHO; 
-*RO143A % 2.4D-14                     : C2H5O2+C2H5O2 = C2H5OH+CH3CHO;
-*RO143B%  4.0D-14                     : C2H5O2+C2H5O2 = C2H5O+C2H5O;
-
-
-ROMCM5% J<41>                       : C2H5OOH = C2H5O+OH;
-ROMCM11% J<13>                      : CH3CHO = CH3O2+HO2+CO;
-ROMCM20% 2.83D-6                    : CH3CO3H = CH3O2+OH;
 *-------------------------------ALKYL NITRATES-------------------------;
 *---Methyl nitrate (1_01);
 ROMCM2% 2.3D-12*EXP(360/T)*0.001    : CH3O2+NO = CH3NO3;
 RO40  % 4.0D-13*EXP(-845/T)         : OH+CH3NO3 = HCHO+NO2;
-RO211 % 5.56D-7                     : CH3NO3 = CH3O+NO2;                *J 5.56D-7 MCMv3.3, 1.6D-6 BrasseurTextbook1999;
+RO211 % J<51>                     : CH3NO3 = CH3O+NO2; 
 *---Ethyl nitrate (1_02);
 *ROMCM3% 2.55D-12*EXP(380/T)*0.009   : C2H5O2+NO = C2H5NO3;
 *RO41  % 6.7D-13*EXP(-395/T)         : OH+C2H5NO3 = CH3CHO+NO2;
