@@ -4,31 +4,32 @@ clear; clc;
 indir = '..';
 outdir = 'ANsCB_pics';
 part = 'chem_';
-exp = '1_05_';
-spname{1} = 'CO';
-spname{2} = 'CH4';
-spname{3} = 'CH4AN';
-spname{4} = 'C2H6';
-spname{5} = 'C2H6AN';
-spname{6} = 'C3H8';
-spname{7} = 'C3H8AN';
-spname{8} = 'NC4H10';
-spname{9} = 'NC4H10AN';
-spname{10} = 'NC5H12';
-spname{11} = 'NC5H12AN';
+exp = '0_04';
+spname{1} = '_CO';
+spname{2} = '_CH4';
+spname{3} = '_CH4AN';
+spname{4} = '_C2H6';
+spname{5} = '_C2H6AN';
+spname{6} = '_C3H8';
+spname{7} = '_C3H8AN';
+spname{8} = '_NC4H10';
+spname{9} = '_NC4H10AN';
+spname{10} = '_NC5H12';
+spname{11} = '_NC5H12AN';
 for i = 1:length(spname)
     fname = [indir,'/',part,exp,spname{i},'.dat'];
     f = importdata(fname,' ',2);
     rd{i} = f.data;
 end
 M = 2.430605e+19; % air density
-td = (horzcat(rd{1},rd{2},rd{3},rd{4},rd{5},rd{6},rd{7},rd{8},rd{9},rd{10},rd{:,11}(1:end-1,:)))/M*1.0e+9;
-dlmwrite(strcat(part,exp,'supernew2.dat'),td,'delimiter','\t','precision','%14.6e');
+% rd{:,11}(1:end-1,:))
+td = (horzcat(rd{1},rd{2},rd{3},rd{4},rd{5},rd{6},rd{7},rd{8},rd{9},rd{10},rd{11}))/M*1.0e+9;
+dlmwrite(strcat(part,exp,'.dat'),td,'delimiter','\t','precision','%14.6e');
 %% Plot mixing ratios
 spseqfac = {'O3' 'O1D' 'OH' 'NO' 'NO2' ...
     'HO2' 'H2O2' 'CO' 'CH4' 'HCHO' ...
     'CH3O' 'CH3O2' 'CH3OOH' 'CH3NO3' 'C2H6' ...
-    'C2H5O' 'C2H5O2' 'C2H5OOH' 'CH3CHO' 'CH3CO' ...
+    'C2H5O' 'C2H5O2' 'C2H5OOH' 'CH3CHO' 'CH3CO3' ...
     'HCOCH2O2' 'C2H5NO3' 'C3H8' 'IC3H7O' 'IC3H7O2' ...
     'NC3H7O' 'NC3H7O2' 'IC3H7OOH' 'NC3H7OOH' 'C2H5CHO' ...
     'C2H5CO3' 'CH3CO3' 'CH3COCH2O2' 'CH3COCH3' 'IC3H7NO3' ...
@@ -49,7 +50,7 @@ xend = size(td,1);
 fig=figure;
 for isub = 1:numel(spseqpl)
     j = find(ismember(spseqfac,spseqpl{isub}));
-    subplot(nrows,ncols,isub); plot(td(:,j),'LineWidth',2,'Color','b'); title(spseqpl{isub});
+    subplot(nrows,ncols,isub); plot(td(:,j),'LineWidth',2,'Color','b'); title(spseqpl{isub},'Fontsize',9);
 end
 faxes = findobj(fig,'Type','Axes');
 for i=1:length(faxes)
@@ -58,6 +59,6 @@ for i=1:length(faxes)
     set(faxes(i),'FontSize',6)
     xlim(faxes(i),[0 xend]);
 end
-imgname = strcat(outdir,'/',part,exp,'supernew22.png');
+imgname = strcat(outdir,'/',part,exp,'.png');
 set(gcf,'visible','off')
 print(gcf,'-dpng','-r300',imgname);
