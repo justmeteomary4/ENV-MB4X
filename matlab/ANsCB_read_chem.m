@@ -1,10 +1,11 @@
 % Read and plot resulting mixing ratios from ANsCB model
 %% Read mixing ratios
 clear; clc;
+M = 2.430605e+19; % air density
 indir = '..';
 outdir = 'ANsCB_pics';
 part = 'chem_';
-exp = '0_04';
+exp = '1_01';
 spname{1} = '_CO';
 spname{2} = '_CH4';
 spname{3} = '_CH4AN';
@@ -16,16 +17,16 @@ spname{8} = '_NC4H10';
 spname{9} = '_NC4H10AN';
 spname{10} = '_NC5H12';
 spname{11} = '_NC5H12AN';
-for i = 1:length(spname)
-    fname = [indir,'/',part,exp,spname{i},'.dat'];
+for isp = 1:length(spname)
+    fname = [indir,'/',part,exp,spname{isp},'.dat'];
     f = importdata(fname,' ',2);
-    rd{i} = f.data;
+    rd{isp} = f.data;
 end
-M = 2.430605e+19; % air density
 % rd{:,11}(1:end-1,:))
-td = (horzcat(rd{1},rd{2},rd{3},rd{4},rd{5},rd{6},rd{7},rd{8},rd{9},rd{10},rd{11}))/M*1.0e+9;
-dlmwrite(strcat(part,exp,'.dat'),td,'delimiter','\t','precision','%14.6e');
-%% Plot mixing ratios
+tdnd = (horzcat(rd{1},rd{2},rd{3},rd{4},rd{5},rd{6},rd{7},rd{8},rd{9},rd{10},rd{11}));
+tdmr = tdnd/M*1.0e+9;
+% dlmwrite(strcat(part,exp,'.dat'),tdmr,'delimiter','\t','precision','%14.6e');
+%% Plot mixing ratios timeseries
 spseqfac = {'O3' 'O1D' 'OH' 'NO' 'NO2' ...
     'HO2' 'H2O2' 'CO' 'CH4' 'HCHO' ...
     'CH3O' 'CH3O2' 'CH3OOH' 'CH3NO3' 'C2H6' ...
@@ -46,11 +47,11 @@ spseqpl = {'O3' 'O1D' 'OH' 'NO' 'NO2' ...
     'SC4H9NO3' 'PEANO3' 'PEBNO3' 'PECNO3' 'CO'};
 nrows = 5;
 ncols = 5;
-xend = size(td,1);
+xend = size(tdmr,1);
 fig=figure;
 for isub = 1:numel(spseqpl)
     j = find(ismember(spseqfac,spseqpl{isub}));
-    subplot(nrows,ncols,isub); plot(td(:,j),'LineWidth',2,'Color','b'); title(spseqpl{isub},'Fontsize',9);
+    subplot(nrows,ncols,isub); plot(tdmr(:,j),'LineWidth',2,'Color','b'); title(spseqpl{isub},'Fontsize',9);
 end
 faxes = findobj(fig,'Type','Axes');
 for i=1:length(faxes)
@@ -61,4 +62,23 @@ for i=1:length(faxes)
 end
 imgname = strcat(outdir,'/',part,exp,'.png');
 set(gcf,'visible','off')
-print(gcf,'-dpng','-r300',imgname);
+% print(gcf,'-dpng','-r300',imgname);
+%% Calculate number of carbon bonds
+ncb = [0 0 0 0 0 ...
+    0 0 1 4 2 ...
+    3 3 3 3 7 ...
+    6 6 6 5 4 ...
+    4 6 10 9 9 ... 
+    0 0 0 0 0 ...
+    0 0 0 0 0 ...
+    0 0 0 0 0 ...
+    0 0 0 0 0 ...
+    0 0 0 0 0 ...
+    0 0 0 0 0 ...
+    0 0 0 0 0 ...
+    0 0 0 0];
+for incb = 1:length(ncb)
+    Pbonds(:,incb) = tdnd(:,incb)*ncb(incb);
+    RadPotential = sum(Pbonds(end,:),2);
+    RadPotentialNoCH4 = sum(Pbonds(end,:),2)-Pbonds(end,9);
+end
