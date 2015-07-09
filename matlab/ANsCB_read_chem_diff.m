@@ -1,47 +1,52 @@
 % Read and plot resulting mixing ratios from ANsCB model
 %% Read mixing ratios
 clear; clc;
-indir = '..';
+indir = '';
 outdir = 'ANsCB_pics';
-fname = {'chem_0_00' 'chem_0_01' 'chem_0_02' 'chem_1_01' 'chem_1_02'};
-%             inorganic    ing+CH4     ing+CH4+C2H6 ing+CH4+AN   ing+CH4+C2H6+ANs  
-%             1                2                 3                4                5
+fname = {'chem_0_01' 'chem_0_02' 'chem_0_03' 'chem_0_04' 'chem_0_05' ...
+              'chem_1_01' 'chem_1_02' 'chem_1_03' 'chem_1_04' 'chem_1_05'};
 for fn = 1:length(fname)
     fnamelong = [indir,'/',fname{fn},'.dat'];
     f = importdata(fnamelong,' ',2);
     for i = 1:numel(f.colheaders)
-        td1{fn,i} = f.data;
-        header{fn,i} = f.colheaders{i}(2:end); % read headers from 2nd letter
+        td{fn,i} = f.data;
     end
 end
-plnames = {'O3' 'O1D' 'OH' 'NO' 'NO2' 'HO2' 'H2O2' 'CO' 'CH4' 'C2H6' 'CH3O' 'CH3O2' 'C2H5O' 'C2H5O2' 'HCHO' 'CH3NO3' 'C2H5NO3'};
+%% Calculate differencies in O3 production between experiments
+diffO3(:,1) = td{6,1}(:,1)-td{1,1}(:,1);
+diffO3(:,2) = td{7,1}(:,1)-td{2,1}(:,1);
+diffO3(:,3) = td{8,1}(:,1)-td{3,1}(:,1);
+diffO3(:,4) = td{9,1}(:,1)-td{4,1}(:,1);
+diffO3(:,5) = td{10,1}(:,1)-td{5,1}(:,1);
+%% Plot mixing ratios
 nrows = 3;
 ncols = 2;
-xend = 3600*24;%length(td1);
-%                                                                                                                       Effect
-diffO3_001_000 = td1{2,1}(1:xend,1)-td1{1,1}(1:xend,1); % CH4-inorganic                  CH4 only
-diffO3_002_000 = td1{3,1}(1:xend,1)-td1{1,1}(1:xend,1); % CH4+C2H6-inorganic        CH4+C2H6 (can calc C2H6 only)
-diffO3_101_000 = td1{4,1}(1:xend,1)-td1{1,1}(1:xend,1); % CH4+AN-inorganic           CH4+AN (need CH4+AN-CH4)
-diffO3_102_000 = td1{5,1}(1:xend,1)-td1{1,1}(1:xend,1); % CH4+C2H6+ANs-inorganic
-diffO3_101_001 = td1{4,1}(1:xend,1)-td1{2,1}(1:xend,1); % CH4+AN-CH4                         methyl nitrate
-diffO3_102_002 = td1{5,1}(1:xend,1)-td1{3,1}(1:xend,1); % CH4+C2H6+ANs-(CH4+C2H6)  ethyle nitrate
-%% Plot mixing ratios
 fig=figure;
-subplot(3,2,1); plot(td1{2,1}(1:xend,1)); title('inorg+CH4');
-subplot(3,2,2); plot(td1{3,1}(1:xend,1)); title('inorg+CH4+C2H6');
-subplot(3,2,3); plot(td1{3,1}(1:xend,1)); title('inorg+CH4+CH3NO3');
-subplot(3,2,4); plot(td1{5,1}(1:xend,1)); title('inorg+CH4+C2H6+CH3NO3+C2H5NO3');
-subplot(3,2,5); plot(diffO3_101_001); title('CH3NO3'); % inorg+CH4+CH3NO3-(inorg+CH4)
-subplot(3,2,6); plot(diffO3_102_002); title('CH3NO3+C2H5NO3'); %inorg+CH4C2H6+CH3NO3+C2H5NO3-(inorg+CH4C2H6)
-ha = axes('Position',[0.5 0 1 1],'Xlim',[0 1],'Ylim',[0 1],'Box','off','Visible','off','Units','normalized','clipping','off');
-titlemain = text(0.5,1,'\bf O3','HorizontalAlignment','center','VerticalAlignment','top');
-faxes = findobj(fig,'Type','Axes');
-for i=1:length(faxes)
-    xlabel(faxes(i),'sec','FontSize',9)
-    ylabel(faxes(i),'ppb','FontSize',9)
-    set(faxes(i),'FontSize',7)
-    xlim(faxes(i),[0 xend]);
+diffexp = {'101-001' '102-002' '103-003' '104-004' '105-005'};
+for isub = 1:length(diffexp)
+    subplot(nrows,ncols,isub); plot(diffO3(:,isub)); title(diffexp{isub});
+% subplot(nrows,ncols,1); plot(td{1,1}(:,1)); title('inorg+CH4');
+% subplot(nrows,ncols,2); plot(td{2,1}(:,1)); title('...+C2H6');
+% subplot(nrows,ncols,3); plot(td{3,1}(:,1)); title('...+C3H8');
+% subplot(nrows,ncols,4); plot(td{4,1}(:,1)); title('...+NC4H10');
+% subplot(nrows,ncols,5); plot(td{5,1}(:,1)); title('...+NC5H12');
+% subplot(nrows,ncols,6); plot(td{6,1}(:,1)); title('...+CH3NO3'); % top
+% subplot(nrows,ncols,7); plot(td{7,1}(:,1)); title('...+C2H5NO3'); % top+left
+% subplot(nrows,ncols,8); plot(td{8,1}(:,1)); title('...+IC3H7NO3+NC3H7NO3');
+% subplot(nrows,ncols,9); plot(td{9,1}(:,1)); title('...+NC4H9NO3+SC4H9NO3');
+% subplot(nrows,ncols,10); plot(td{10,1}(:,1)); title('...+PEANO3+PEBNO3+PECNO3');
 end
-imgname = strcat(outdir,'/','chem_diff.png');
+faxes = findobj(fig,'Type','Axes');
+    for i=1:length(faxes)
+        xlabel(faxes(i),'sec','FontSize',8)
+        ylabel(faxes(i),'ppb','FontSize',8)
+        set(faxes(i),'FontSize',7)
+        ylim(faxes(i),[min(min(min(min(min(diffO3))))) 0]);
+        xlim(faxes(i),[0 86396]);
+    end
+ha = axes('Position',[0.5 0 1 1],'Xlim',[0 1],'Ylim',[0 1],'Box','off','Visible','off','Units','normalized','clipping','off');
+titlemain = text(0,1,'\bf delta O_3','HorizontalAlignment','center','VerticalAlignment','top');
+% legend('001,002,003,004 - without ANs','101,102,103,104,105 - with ANs');
+imgname = strcat(outdir,'/','chem_diffO3.png');
 set(gcf,'visible','off')
 print(gcf,'-dpng','-r300',imgname);
