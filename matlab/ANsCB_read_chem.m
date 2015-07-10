@@ -5,7 +5,9 @@ M = 2.430605e+19; % air density
 indir = '..';
 outdir = 'ANsCB_pics';
 part = 'chem_';
-exp = '0_01';
+exp = '1_05';
+NOx = '5ppb';
+VOC = '4ppb';
 spname{1} = '_CO';
 spname{2} = '_CH4';
 spname{3} = '_CH4AN';
@@ -22,10 +24,9 @@ for isp = 1:length(spname)
     f = importdata(fname);
     rd{isp} = f;
 end
-% rd{:,11}(1:end-1,:))
 numden = (horzcat(rd{1},rd{2},rd{3},rd{4},rd{5},rd{6},rd{7},rd{8},rd{9},rd{10},rd{11}));
 mixrat = numden/M*1.0e+9;
-% dlmwrite(strcat(part,exp,'.dat'),mixrat,'delimiter','\t','precision','%14.6e');
+dlmwrite(strcat(part,exp,'_',NOx,'_',VOC,'.dat'),mixrat,'delimiter','\t','precision','%14.6e');
 %% Plot mixing ratios timeseries
 spseqfac = {'O3' 'O1D' 'OH' 'NO' 'NO2' ...
     'HO2' 'H2O2' 'CO' 'CH4' 'HCHO' ...
@@ -51,7 +52,8 @@ xend = size(mixrat,1);
 fig=figure;
 for isub = 1:numel(spseqpl)
     j = find(ismember(spseqfac,spseqpl{isub}));
-    subplot(nrows,ncols,isub); plot(mixrat(:,j),'LineWidth',2,'Color','b'); title(spseqpl{isub},'Fontsize',9);
+    subplot(nrows,ncols,isub); plot(mixrat(:,j),'LineWidth',2,'Color','b'); 
+    title(spseqpl{isub},'Fontsize',9);
 end
 faxes = findobj(fig,'Type','Axes');
 xlimits = [0 xend];
@@ -64,7 +66,7 @@ for i=1:length(faxes)
     xlim(faxes(i),xlimits);
     set(faxes(i),'XTick',xx,'XTickLabel',xxlab)
 end
-imgname = strcat(outdir,'/',part,exp,'_15min.png');
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'.png');
 set(gcf,'visible','off')
 print(gcf,'-dpng','-r300',imgname);
 %% Calculate number of carbon bonds
@@ -85,13 +87,35 @@ ncb2D =  repmat(ncb,size(numden,1),1); % vertically stack a row vector
 Pbonds = numden.*ncb2D;
 RadPotential = sum(Pbonds(end,:),2);
 RadPotentialNoCH4 = RadPotential-Pbonds(end,9);
-%% Plot number of carbon bonds
+%% Plot number of carbon bonds vs time
+Pbonds(Pbonds==0) = NaN; % not right
+Pbonds(:,8) = NaN;
+Pbonds(:,9) = NaN;
 cc=hsv(64);
-figure; 
+id = 'MATLAB:legend:IgnoringExtraEntries';
+w = warning('off',id);
+figure;
 hold on;
-% Pbonds(Pbonds==0) = NaN ;
-for ipl=1:64
-    plot(Pbonds(:,ipl),'color',cc(ipl,:));
+for ipl=1:length(spseqfac)
+    plot(Pbonds(:,ipl),'color',cc(ipl,:),'LineWidth',2);
+    legend(spseqfac,'Location','eastoutside','FontSize',5);
 end
+title(strcat('exp = ',exp,': NOx = ',NOx, ', VOC exc CO,CH4 = ',VOC),'Interpreter','none');
+xlimits = [0 xend];
+xx =0:(xend)/2:xend;
+xxlab = num2str(xx'/4);
+xlabel('mins');
+ylabel('number of carbon bonds');
+xlim(xlimits);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_cb_vs_time.png');
+set(gcf,'visible','off')
+print(gcf,'-dpng','-r300',imgname);
+%% Plot number of carbon bonds partioning
 figure;
 bar(Pbonds(end,:));
+title(strcat('exp = ',exp,': NOx = ',NOx, ', VOC exc CO,CH4 = ',VOC),'Interpreter','none');
+xlabel('mins');
+ylabel('number of carbon bonds per compound');
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_cb_partioning.png');
+set(gcf,'visible','off')
+print(gcf,'-dpng','-r300',imgname);
