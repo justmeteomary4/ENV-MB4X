@@ -58,147 +58,175 @@ NC5H11NO3 = mixrat(:,63)+mixrat(:,64)+mixrat(:,65);
 IC5H11NO3 = mixrat(:,1); %!
 
 figure; plot(mixrat(:,1),'LineWidth',2,'Color','b'); title('O_3','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','O3.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','O3.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,2),'LineWidth',2,'Color','b'); title('O(^1D)','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','O1D.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','O1D.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,3),'LineWidth',2,'Color','b'); title('OH','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','OH.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','OH.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,4),'LineWidth',2,'Color','b'); title('NO','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','NO.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','NO.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,5),'LineWidth',2,'Color','b'); title('NO_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','NO2.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','NO2.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,6),'LineWidth',2,'Color','b'); title('HO_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','HO2.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','HO2.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,8),'LineWidth',2,'Color','b'); title('CO','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','CO.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','CO.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
  
 figure; plot(mixrat(:,10),'LineWidth',2,'Color','b'); title('CH_4','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','CH4.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','CH4.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,16),'LineWidth',2,'Color','b'); title('C_2H_6','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','C2H6.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','C2H6.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,25),'LineWidth',2,'Color','b'); title('C_3H_8','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','C3H8.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','C3H8.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,38),'LineWidth',2,'Color','b'); title('n-C_4H_1_0','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','nC4H10.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','nC4H10.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,1),'LineWidth',2,'Color','r'); title('i-C_4H_1_0','Fontsize',10);     %!
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','iC4H10.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','iC4H10.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,50),'LineWidth',2,'Color','r'); title('n-C_5H_1_2','Fontsize',10);   %!
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','nC5H12.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','nC5H12.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,1),'LineWidth',2,'Color','r'); title('i-C_5H_1_2','Fontsize',10);   %!
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','iC5H12.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','iC5H12.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
     
 figure; plot(mixrat(:,13),'LineWidth',2,'Color','b'); title('CH_3O_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','CH302.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','CH302.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,18),'LineWidth',2,'Color','b'); title('C_2H_5O_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','C2H5O2.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','C2H5O2.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(C3H7O2,'LineWidth',2,'Color','b'); title('\Sigma C_3H_7O_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','C3H7O2.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','C3H7O2.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(NC4H9O2,'LineWidth',2,'Color','b'); title('\Sigma n-C_4H_9O_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','nC4H9O2.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','nC4H9O2.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(IC4H9O2,'LineWidth',2,'Color','r'); title('\Sigma i-C_4H_9O_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','IC4H9O2.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','IC4H9O2.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(NC5H11O2,'LineWidth',2,'Color','r'); title('\Sigma n-C_5H_1_1O_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','nC5H11O2.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','nC5H11O2.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(IC5H11O2,'LineWidth',2,'Color','r'); title('\Sigma i-C_5H_1_1O_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','iC5H11O2.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','iC5H11O2.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
     
 figure; plot(mixrat(:,15),'LineWidth',2,'Color','b'); title('CH_3ONO_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','CH3NO3.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','CH3NO3.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(mixrat(:,24),'LineWidth',2,'Color','b'); title('C_2H_5ONO_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','C2H5NO3.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','C2H5NO3.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(C3H7NO3,'LineWidth',2,'Color','b'); title('\Sigma C_3H_7ONO_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','C3H7NO3.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','C3H7NO3.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(NC4H9NO3,'LineWidth',2,'Color','b'); title('\Sigma n-C_4H_9ONO_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','nC4H9NO3.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','nC4H9NO3.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(IC4H9NO3,'LineWidth',2,'Color','r'); title('\Sigma i-C_4H_9ONO_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','iC4H9NO3.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','iC4H9NO3.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(NC5H11NO3,'LineWidth',2,'Color','b'); title('\Sigma n-C_5H_1_1ONO_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','nC5H11NO3.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','nC5H11NO3.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 figure; plot(IC5H11NO3,'LineWidth',2,'Color','b'); title('\Sigma i-C_5H_1_1ONO_2','Fontsize',10);
-imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','iC5H11NO3.pdf'); print(gcf,'-dpdf',imgname);
+imgname = strcat(outdir,'/',part,exp,'_',NOx,'_',VOC,'_','iC5H11NO3.pdf'); 
 xlimits = [0 xend]; xx =0:(xend)/2:xend; xxlab = num2str(xx'/4); xlim(gca,xlimits);
 set(gca,'XTick',xx,'XTickLabel',xxlab); set(gca,'FontSize',6); set(gcf,'visible','off')
+print(gcf,'-dpdf',imgname);
 
 % xlabel('hour','FontSize',6)
 % ylabel('ppb','FontSize',6)
