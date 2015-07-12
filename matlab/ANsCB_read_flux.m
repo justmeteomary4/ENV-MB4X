@@ -70,7 +70,7 @@ end
 figure;
 xchange = [-1 86400]; ychange = [cb_init cb_end];
 plot(xchange,ychange,'--ok');
-title(strcat(fname, ': number of CBs at t0 (top left) and tN (bottom right)'), 'Interpreter', 'none');
+title(strcat(fname, ': number of CBs at t0 (top left) and tN (bottom right)'), 'Interpreter','none');
 imgname = strcat(outdir,'/',out,'cb_change_',fname,'.png');
 set(gcf,'visible','on')
 print(gcf,'-dpng','-r300',imgname);
