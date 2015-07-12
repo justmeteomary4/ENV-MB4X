@@ -7,9 +7,9 @@ fname = {'chem_0_01' 'chem_0_02' 'chem_0_03' 'chem_0_04' 'chem_0_05' ...
               'chem_1_01' 'chem_1_02' 'chem_1_03' 'chem_1_04' 'chem_1_05'};
 for fn = 1:length(fname)
     fnamelong = [indir,'/',fname{fn},'.dat'];
-    f = importdata(fnamelong,' ',2);
+    f = importdata(fnamelong);
     for i = 1:numel(f.colheaders)
-        td{fn,i} = f.data;
+        td{fn,i} = f;
     end
 end
 %% Calculate differencies in O3 production between experiments
@@ -42,7 +42,7 @@ faxes = findobj(fig,'Type','Axes');
         ylabel(faxes(i),'ppb','FontSize',8)
         set(faxes(i),'FontSize',7)
         ylim(faxes(i),[min(min(min(min(min(diffO3))))) 0]);
-        xlim(faxes(i),[0 86396]);
+        xlim(faxes(i),[0 length(td)]);
     end
 ha = axes('Position',[0.5 0 1 1],'Xlim',[0 1],'Ylim',[0 1],'Box','off','Visible','off','Units','normalized','clipping','off');
 titlemain = text(0,1,'\bf delta O_3','HorizontalAlignment','center','VerticalAlignment','top');
