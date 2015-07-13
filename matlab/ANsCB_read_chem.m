@@ -365,10 +365,40 @@ ncb = [0 0 0 0 0 ...
 	16 15 15 15 15 ...
 	15 15 15 15 15 ...
 	14 14 15 15 15];
-ncb2D =  repmat(ncb,size(numden,1),1); % vertically stack a row vector
-Pbonds = numden.*ncb2D;
-RadPotential = sum(Pbonds(end,:),2);
-RadPotentialNoCH4 = RadPotential-Pbonds(end,10);
+
+for i = 1:numel(ANs)
+    for j = 1:numel(NOx)
+        arr = numden{i,j};
+        ncb2D =  repmat(ncb,size(arr,1),1); % vertically stack a row vector
+        Pbonds(i,j,:,:) = arr.*ncb2D;
+        RadPotentialInit(i,j) = sum(Pbonds(i,j,1,:),4);
+        RadPotentialEnd(i,j) = sum(Pbonds(i,j,end,:),4);
+        RadPotentialDiff(i,j) = RadPotentialEnd(i,j) - RadPotentialInit(i,j);
+        epsilon(i,j) = (mixrat{i,j}(end,1)-mixrat{i,j}(1,1))/RadPotentialDiff(i,j);
+        RadPotentialRate(i,j,:) = gradient(squeeze(sum(Pbonds(i,j,:,:),4)))./15.*60;
+        O3perCBrate(i,j,:) = O3rate(i,j,:)./RadPotentialRate(i,j,:);
+%         RadPotentialNoCH4(i,j) = RadPotentialEnd(i,j) - Pbonds(i,j,end,10);
+    end
+end
+%%
+
+ for j = 1:numel(NOx)
+     j
+     figure
+     for i = 1:numel(ANs)
+         plot(squeeze(O3perCBrate(i,j,:)),'Color',cvec(i,:),'LineWidth',2);
+         hold on;
+         set(gcf,'visible','off')
+     end
+     lalala = strcat(outdir,'/',part,'_lalala_',num2str(NOx(j)),'.png');
+     legend('base - CH_3ONO_2','base - C_2H_5ONO_2','base - \Sigma C_3H_7ONO_2',...
+'base - \Sigma n-C_4H_9ONO_2','base - \Sigma i-C_4H_9ONO_2','base - \Sigma n-C_5H_1_2ONO_2',...
+'base - \Sigma i-C_5H_1_2ONO_2','Location','east');
+     print(gcf,'-dpng','-r300',lalala);
+ end
+% contourf(epsilon); colorbar
+
+figure;plot(squeeze(O3rate(1,1,:)))
 %% Plot number of carbon bonds vs time
 Pbonds(Pbonds==0) = NaN; % not right
 Pbonds(:,8) = NaN; % CO
