@@ -5,6 +5,7 @@ M = 2.430605e+19; % air density
 indir = '..';
 common_outdir = 'ANsCB_pics';
 addpath('D:\FACSIMILE\ANsCBmodel\altmany-export_fig-ea12243');
+addpath('D:\FACSIMILE\ANsCBmodel\paruly\paruly');
 part = 'chem';
 AN = {'noAN' 'allAN'};
 NOx = [5 25 50 100 250 500 750 1000 2500 5000 10000];
@@ -93,25 +94,23 @@ end
 %% Net O3 production vs NOx and VOC depending on ANs presence (with/without)
 clc;
 fig1 = figure;
-cvec =[0.25 0.25 0.25
-          0.25 0.25 0.75 
-          0.25 0.75 1.00 
-          1.00 0.50 0.00
-          0.25 0.75 0.25
-          1.00 0.00 0.25
-          0.75 0.25 0.25
-          1.00 0.75 0.25
-          0.25 1.00 0.00
-          0.50 0.25 0.75
-          0.50 0.75 0.75
-          0.75 0.25 0.25
-          0.25 1.00 0.25];
-for i = 1:numel(AN) % contourf net O3 vs NOx and VOC 
+VOCsum = [1781.52 1809.92 1838.32 1866.71 1895.11 1923.51 1951.91 1980.31 2008.70 2037.10 2065.50];
+for i = 2%1:numel(AN) % contourf net O3 production vs NOx and VOC 
     for j = 1:numel(NOx)
         for k = 1:numel(VOC) 
-            outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i},'_',num2str(VOC(k)));
+            outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i});
             if exist(outdir,'dir') ~= 7; mkdir(outdir); end
-            
+            netO3(i,j,k) = mixrat(i,j,k,end,1)-mixrat(i,j,k,1,1);
+            netOH(i,j,k) = mixrat(i,j,k,end,3)-mixrat(i,j,k,1,3);
+            netHO2(i,j,k) = mixrat(i,j,k,end,6)-mixrat(i,j,k,1,6);
         end
     end
+    figure(fig1)
+    contourf(NOx,VOCsum,squeeze(netO3(i,:,:))); colorbar; colormap(paruly)
+    imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3ANsNOxVOC.png');
+    title('Net O_3 production vs NOx and VOC conditions without RONO_2'); %co
+    xlabel('NOx, ppt');
+    ylabel('VOC, ppb');
+    set(gca,'XScale','log');
+    print(gcf,'-dpng','-r300',imgname);
 end
