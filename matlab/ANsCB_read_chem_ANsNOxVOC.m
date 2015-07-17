@@ -27,6 +27,22 @@ for i = 1:numel(AN) % calc numden and mixrat
     end
 end
 tN = 96;
+%% General plotting variables
+cvec =[0.25 0.25 0.25 
+          0.25 0.25 0.75 
+          0.25 0.75 1.00 
+          1.00 0.50 0.00
+          0.25 0.75 0.25
+          1.00 0.00 0.25
+          0.75 0.25 0.25
+          1.00 0.75 0.25
+          0.25 1.00 0.00
+          0.50 0.25 0.75
+          0.50 0.75 0.75
+          0.75 0.25 0.25
+          0.25 1.00 0.25];
+VOCsum = [1781.52 1809.92 1838.32 1866.71 1895.11 1923.51 1951.91 1980.31 2008.70 2037.10 2065.50];
+onoff = {'OFF' 'ON'};
 %% Plot all in one figure
 clc;
 nrows = 3;
@@ -87,27 +103,25 @@ titlemain(j) = text(0,1,strcat('\bf NOx= ',num2str(NOx(j)),'ppt'),'HorizontalAli
  end
 imgname21 = strcat(outdir,'/',part,'_',AN{i},'_',num2str(NOx(j)),'_',num2str(VOC(k)),'_21pics.png');
 set(gcf,'visible','off')
-print(gcf,'-dpng','-r300',imgname21);
+% print(gcf,'-dpng','-r300',imgname21);
         end
     end
 end
 %% Net O3 production vs NOx and VOC depending on ANs presence (with/without)
 clc;
-VOCsum = [1781.52 1809.92 1838.32 1866.71 1895.11 1923.51 1951.91 1980.31 2008.70 2037.10 2065.50];
-onoff = {'OFF' 'ON'};
 for i = 1:numel(AN) % contourf net O3 production vs NOx and VOC
     outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i});
     if exist(outdir,'dir') ~= 7; mkdir(outdir); end
     for j = 1:numel(NOx)
         for k = 1:numel(VOC) 
-            netO3(i,j,k) = mixrat(i,j,k,end,1)-mixrat(i,j,k,1,1);
+            netO3(i,j,k) = (mixrat(i,j,k,end,1)-mixrat(i,j,k,1,1))/24; % /24 rate, changeable
             netOH(i,j,k) = mixrat(i,j,k,end,3)-mixrat(i,j,k,1,3);
             netHO2(i,j,k) = mixrat(i,j,k,end,6)-mixrat(i,j,k,1,6);
         end
     end
     figure
-    contourf(NOx,VOCsum,squeeze(netO3(i,:,:))); colorbar; colormap(paruly)
-    imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3.png');
+    contourf(NOx,VOCsum,squeeze(netO3(i,:,:))'); colorbar; colormap(paruly) % transposed
+    imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3_rate.png');
     title(['Net O_3 production with RONO_2 chemistry ',onoff{i}]);
     xlabel('NOx, ppt');
     ylabel('VOC, ppb');
@@ -116,7 +130,7 @@ for i = 1:numel(AN) % contourf net O3 production vs NOx and VOC
     set(gcf,'visible','off')
     print(gcf,'-dpng','-r300',imgname);
 end
-%% Difference in net O3 production between experiments with and without ANs
+%% Difference in net O3 production vs NOx and VOC between experiments with and without ANs
 clc;
 i = 2;
 outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i});
@@ -127,7 +141,7 @@ for j = 1:numel(NOx) % difference in net O3 production
     end
 end
 figure
-contourf(NOx,VOCsum,netdiffO3); colorbar; colormap(paruly)
+contourf(NOx,VOCsum,netdiffO3'); colorbar; colormap(paruly) % transposed
 imgname = strcat(outdir,'/',part,'_',AN{i},'_netdiffO3.png');
 title('Difference in net O_3 production');
 xlabel('NOx, ppt');
@@ -135,6 +149,49 @@ ylabel('VOC, ppb');
 set(gca,'XScale','log');
 set(gcf,'visible','off')
 print(gcf,'-dpng','-r300',imgname);
+%% Net O3 production vs NOx (Z = VOC)
+clc;
+cmap = cvec;
+for i = 1:numel(AN) % net O3 production vs NOx
+    outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i});
+    figure
+    if exist(outdir,'dir') ~= 7; mkdir(outdir); end
+        for k = 1:numel(VOC)
+            plot(NOx,netO3(i,:,k),'Color',cmap(k,:),'LineWidth',2); hold on;
+        end
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3_vs_NOx.png');
+        title('Net O_3 production');
+        leg = legend('1781.52','1809.92','1838.32','1866.71','1895.11','1923.51','1951.91','1980.31',...
+    '2008.70','2037.10','2065.50','Location','eastoutside');
+        legv = get(leg,'title');
+        set(legv,'string','\Sigma VOCs');
+        xlabel('NOx, ppt');
+        ylabel('O_3, ppb');
+        set(gca,'XScale','log');
+        set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+end
+%% Net O3 production vs VOCsum (Z = NOx)
+clc;
+cmap = cvec;
+for i = 1:numel(AN) % net O3 production vs VOCsum
+    outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i});
+    figure
+    if exist(outdir,'dir') ~= 7; mkdir(outdir); end
+        for j = 1:numel(NOx)
+            plot(VOCsum,squeeze(netO3(i,j,:)),'Color',cmap(j,:),'LineWidth',2); hold on;
+        end
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3_vs_VOCsum.png');
+        title('Net O_3 production');
+        leg = legend('5 ppt','25 ppt','50 ppt','100 ppt','250 ppt','500 ppt','750 ppt','1 ppb',...
+    '2.5 ppb','5 ppb','10 ppb','Location','eastoutside');
+        legv = get(leg,'title');
+        set(legv,'string','NOx');
+        xlabel('VOC, ppb');
+        ylabel('O_3, ppb');
+        set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+end
 %% Net ANs production vs NOx and VOC
 clc;
 i = 2;
@@ -149,7 +206,7 @@ for j = 1:numel(NOx) % net ANs production
     end
 end
 figure
-contourf(NOx,VOCsum,ANs(:,:,end)); colorbar; colormap(paruly)
+contourf(NOx,VOCsum,ANs(:,:,end)'); colorbar; colormap(paruly)
 imgname = strcat(outdir,'/',part,'_',AN{i},'_netANs.png');
 title('Net RONO_2 production');
 xlabel('NOx, ppt');
@@ -163,20 +220,7 @@ i = 2;
 outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i});
 if exist(outdir,'dir') ~= 7; mkdir(outdir); end
 figure
-cvec =[0.25 0.25 0.25 
-          0.25 0.25 0.75 
-          0.25 0.75 1.00 
-          1.00 0.50 0.00
-          0.25 0.75 0.25
-          1.00 0.00 0.25
-          0.75 0.25 0.25
-          1.00 0.75 0.25
-          0.25 1.00 0.00
-          0.50 0.25 0.75
-          0.50 0.75 0.75
-          0.75 0.25 0.25
-          0.25 1.00 0.25];
-for k = 1:numel(VOC)
+for k = 1:numel(VOC) % net ANs vs NOx
     plot(NOx,ANs(:,k,end),'Color',cvec(k,:),'LineWidth',2); hold on;
 end
 imgname = strcat(outdir,'/',part,'_',AN{i},'_netANs_vs_NOx.png');
@@ -184,7 +228,7 @@ title('Net RONO_2 production');
 leg = legend('1781.52','1809.92','1838.32','1866.71','1895.11','1923.51','1951.91','1980.31',...
     '2008.70','2037.10','2065.50','Location','eastoutside');
 legv = get(leg,'title');
-set(legv,'string','VOC, ppb');
+set(legv,'string','\Sigma VOCs, ppb');
 xlabel('NOx, ppt');
 ylabel('\Sigma RONO_2, ppb');
 set(gca,'XScale','log');
@@ -196,7 +240,7 @@ i = 2;
 outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i});
 if exist(outdir,'dir') ~= 7; mkdir(outdir); end
 figure
-for j = 1:numel(NOx)
+for j = 1:numel(NOx) % net ANs vs VOCsum
     plot(VOCsum,ANs(j,:,end),'Color',cvec(j,:),'LineWidth',2); hold on;
 end
 imgname = strcat(outdir,'/',part,'_',AN{i},'_netANs_vs_VOCsum.png');
