@@ -9,20 +9,25 @@ addpath('D:\FACSIMILE\ANsCBmodel\paruly\paruly');
 part = 'chem';
 AN = {'noAN' 'allAN'};
 NOx = [5 25 50 100 250 500 750 1000 2500 5000 10000];
-VOC = [1 2 3 4 5 6 7 8 9 10 11];
+VOC = [0 1 2 3 4 5 6 7 8 9 10 11];
 comp = {'CO' 'CH4' 'CH4AN' 'C2H6' 'C2H6AN' 'C3H8' 'C3H8AN' 'nC4H10' 'nC4H10AN' ...
     'iC4H10' 'iC4H10AN' 'nC5H12' 'nC5H12AN' 'iC5H12' 'iC5H12AN'};
 for i = 1:numel(AN) % calc numden and mixrat
     for j = 1:numel(NOx)
         for k = 1:numel(VOC)
-            aggr_array = [];
-            for icomp = 1:numel(comp)
-                fname = [indir,'/',part,'_',num2str(AN{i}),'_',num2str(NOx(j)),'_',num2str(VOC(k)),'_',comp{icomp},'.dat'];
-                f = importdata(fname);
-                aggr_array = horzcat(aggr_array, f);
+            if i == 2 && k ==1 
+                numden(i,j,k,:,:) = NaN;
+                mixrat(i,j,k,:,:) = NaN;
+            else
+                aggr_array = [];
+                for icomp = 1:numel(comp)
+                    fname = [indir,'/',part,'_',num2str(AN{i}),'_',num2str(NOx(j)),'_',num2str(VOC(k)),'_',comp{icomp},'.dat'];
+                    f = importdata(fname);
+                    aggr_array = horzcat(aggr_array, f);
+                end
+                numden(i,j,k,:,:) = aggr_array;               % number density
+                mixrat(i,j,k,:,:) = aggr_array./M*1.0e9; % mixing ratio
             end
-            numden(i,j,k,:,:) = aggr_array;               % number density
-            mixrat(i,j,k,:,:) = aggr_array./M*1.0e+9; % mixing ratio
         end
     end
 end
@@ -41,7 +46,7 @@ cvec =[0.25 0.25 0.25
           0.50 0.75 0.75
           0.75 0.25 0.25
           0.25 1.00 0.25];
-VOCsum = [1781.52 1809.92 1838.32 1866.71 1895.11 1923.51 1951.91 1980.31 2008.70 2037.10 2065.50];
+VOCsum = [100 1781.52 1809.92 1838.32 1866.71 1895.11 1923.51 1951.91 1980.31 2008.70 2037.10 2065.50];
 onoff = {'OFF' 'ON'};
 %% Plot all in one figure
 clc;
@@ -108,7 +113,14 @@ set(gcf,'visible','off')
     end
 end
 %% Net O3 production vs NOx and VOC depending on ANs presence (with/without)
+disp(a)
 clc;
+VOCppbC(1) = mixrat(1,1,1,1,8)*1; % CO only
+for k = 2:numel(VOC)
+    VOCppbC(k) = mixrat(1,1,k,1,8)*1+mixrat(1,1,k,1,10)*1+mixrat(1,1,k,1,16)*2+...
+        mixrat(1,1,k,1,25)*3+mixrat(1,1,k,1,38)*4+mixrat(1,1,k,1,50)*4+mixrat(1,1,k,1,60)*5+...
+        mixrat(1,1,k,1,76)*5;
+end
 for i = 1:numel(AN) % contourf net O3 production vs NOx and VOC
     outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i});
     if exist(outdir,'dir') ~= 7; mkdir(outdir); end
@@ -120,12 +132,16 @@ for i = 1:numel(AN) % contourf net O3 production vs NOx and VOC
         end
     end
     figure
-    contourf(NOx,VOCsum,squeeze(netO3(i,:,:))'); colorbar; colormap(paruly) % transposed
-    imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3_rate.png');
+%     contourf(NOx,VOCsum,squeeze(netO3(i,:,:))'); colorbar; colormap(paruly) % transposed
+    contourf(VOCppbC,NOx,squeeze(netO3(i,:,:))); colorbar; colormap(paruly)
+    imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3_rate_withINORGonly_ppbC.png');
     title(['Net O_3 production with RONO_2 chemistry ',onoff{i}]);
-    xlabel('NOx, ppt');
-    ylabel('VOC, ppb');
-    set(gca,'XScale','log');
+%     xlabel('NOx, ppt');
+%     ylabel('VOC, ppb');
+    xlabel('VOC, ppb');
+    ylabel('NOx, ppt');
+%     set(gca,'XScale','log');
+    set(gca,'YScale','log');
     set(gca, 'CLim', [min(min(min(netO3))), max(max(max(netO3)))]);
     set(gcf,'visible','off')
     print(gcf,'-dpng','-r300',imgname);
