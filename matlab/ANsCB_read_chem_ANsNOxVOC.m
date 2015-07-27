@@ -49,11 +49,9 @@ cvec =[0.25 0.25 0.25
 VOCsum = [100 1781.52 1809.92 1838.32 1866.71 1895.11 1923.51 1951.91 1980.31 2008.70 2037.10 2065.50];
 onoff = {'OFF' 'ON'};
 %% Plot all in one figure
-clc;
-nrows = 3;
-ncols = 7;
+clc; plotting = 0; % 0 - don't plot, 1 - plot
 fig=figure;
-for i = 1:numel(AN) % print all in one .png
+for i = 1:numel(AN) % print all in one .png + calc sums of radicals and ANs
     for j = 1:numel(NOx)
         for k = 1:numel(VOC) 
             outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i},'_',num2str(VOC(k)));
@@ -70,6 +68,9 @@ iC4H9NO3 = mixrat(i,j,k,:,58)+mixrat(i,j,k,:,59);
 nC5H11NO3 = mixrat(i,j,k,:,73)+mixrat(i,j,k,:,74)+mixrat(i,j,k,:,75);
 iC5H11NO3 = mixrat(i,j,k,:,88)+mixrat(i,j,k,:,89)+mixrat(i,j,k,:,90);
 
+switch plotting
+    case 1
+        nrows = 3; ncols = 7;
 subplot(nrows,ncols,1);  plot(squeeze(mixrat(i,j,k,:,1)),'LineWidth',2,'Color','b'); title('O_3','Fontsize',7);
 subplot(nrows,ncols,2);  plot(squeeze(mixrat(i,j,k,:,2)),'LineWidth',2,'Color','b'); title('O(^1D)','Fontsize',7);
 subplot(nrows,ncols,3);  plot(squeeze(mixrat(i,j,k,:,3)),'LineWidth',2,'Color','b'); title('OH','Fontsize',7);
@@ -109,11 +110,11 @@ titlemain(j) = text(0,1,strcat('\bf NOx= ',num2str(NOx(j)),'ppt'),'HorizontalAli
 imgname21 = strcat(outdir,'/',part,'_',AN{i},'_',num2str(NOx(j)),'_',num2str(VOC(k)),'_21pics.png');
 set(gcf,'visible','off')
 % print(gcf,'-dpng','-r300',imgname21);
+end
         end
     end
 end
 %% Net O3 production vs NOx and VOC depending on ANs presence (with/without)
-disp(a)
 clc;
 VOCppbC(1) = mixrat(1,1,1,1,8)*1; % CO only
 for k = 2:numel(VOC)
@@ -269,3 +270,193 @@ xlabel('VOC, ppb');
 ylabel('\Sigma RONO_2, ppb');
 set(gcf,'visible','off')
 print(gcf,'-dpng','-r300',imgname);
+%% For model validation: timeseries of main species (noAN)
+clc; plotting = 1; % 0 - don't plot, 1 - plot
+switch plotting
+    case 1
+        i = 1; % for noAN only
+        outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i});
+        if exist(outdir,'dir') ~= 7; mkdir(outdir); end
+        figure
+        plot(squeeze(mixrat(1,3,2,:,1)),'b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,3,12,:,1)),'r','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,10,2,:,1)),'--b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,10,12,:,1)),'--r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_50ppt5000ppt_O3_vs_time.png'); title('O_3');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+end
+        %%
+        figure
+        plot(squeeze(mixrat(1,3,2,:,2)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,3,12,:,2)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_50ppt_O1D_vs_time.png'); title('O(^1D)');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        figure
+        plot(squeeze(mixrat(1,3,2,:,3)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,3,12,:,3)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_50ppt_OH_vs_time.png'); title('OH');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        figure
+        plot(squeeze(mixrat(1,3,2,:,4)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,3,12,:,4)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_50ppt_NO_vs_time.png'); title('NO');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        figure
+        plot(squeeze(mixrat(1,3,2,:,5)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,3,12,:,5)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_50ppt_NO2_vs_time.png'); title('NO_2');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        figure
+        plot(squeeze(mixrat(1,3,2,:,6)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,3,12,:,6)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_50ppt_HO2_vs_time.png'); title('HO_2');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        figure
+        plot(squeeze(mixrat(1,3,2,:,7)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,3,12,:,7)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_50ppt_H2O2_vs_time.png'); title('H_2O_2');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        figure
+        plot(squeeze(mixrat(1,3,2,:,8)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,3,12,:,8)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_50ppt_CO_vs_time.png'); title('CO');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        RO2(1,3,2,:) = mixrat(1,3,2,:,13)+mixrat(1,3,2,:,18)+mixrat(1,3,2,:,27)+mixrat(1,3,2,:,29)+...
+            mixrat(1,3,2,:,41)+mixrat(1,3,2,:,42)+mixrat(1,3,2,:,53)+mixrat(1,3,2,:,54)+...
+            mixrat(1,3,2,:,64)+mixrat(1,3,2,:,65)+mixrat(1,3,2,:,66)+...
+            mixrat(1,3,2,:,80)+mixrat(1,3,2,:,81)+mixrat(1,3,2,:,82);
+        RO2(1,3,12,:) = mixrat(1,3,12,:,13)+mixrat(1,3,12,:,18)+mixrat(1,3,12,:,27)+mixrat(1,3,12,:,29)+...
+            mixrat(1,3,12,:,41)+mixrat(1,3,12,:,42)+mixrat(1,3,12,:,53)+mixrat(1,3,12,:,54)+...
+            mixrat(1,3,12,:,64)+mixrat(1,3,12,:,65)+mixrat(1,3,12,:,66)+...
+            mixrat(1,3,12,:,80)+mixrat(1,3,12,:,81)+mixrat(1,3,12,:,82);
+        figure
+        plot(squeeze(RO2(1,3,2,:)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(RO2(1,3,12,:)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_50ppt_RO2_vs_time.png'); title('RO_2');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        
+        figure
+        plot(squeeze(mixrat(1,10,2,:,1)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,10,12,:,1)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_5000ppt_O3_vs_time.png'); title('O_3');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        figure
+        plot(squeeze(mixrat(1,10,2,:,2)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,10,12,:,2)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_5000ppt_O1D_vs_time.png'); title('O(^1D)');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        figure
+        plot(squeeze(mixrat(1,10,2,:,3)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,10,12,:,3)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_5000ppt_OH_vs_time.png'); title('OH');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        figure
+        plot(squeeze(mixrat(1,10,2,:,4)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,10,12,:,4)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_5000ppt_NO_vs_time.png'); title('NO');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        figure
+        plot(squeeze(mixrat(1,10,2,:,5)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,10,12,:,5)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_5000ppt_NO2_vs_time.png'); title('NO_2');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        figure
+        plot(squeeze(mixrat(1,10,2,:,6)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,10,12,:,6)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_5000ppt_HO2_vs_time.png'); title('HO_2');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        figure
+        plot(squeeze(mixrat(1,10,2,:,7)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,10,12,:,7)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_5000ppt_H2O2_vs_time.png'); title('H_2O_2');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        figure
+        plot(squeeze(mixrat(1,10,2,:,8)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(mixrat(1,10,12,:,8)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_5000ppt_CO_vs_time.png'); title('CO');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+        
+        RO2(1,10,2,:) = mixrat(1,10,2,:,13)+mixrat(1,10,2,:,18)+mixrat(1,10,2,:,27)+mixrat(1,10,2,:,29)+...
+            mixrat(1,10,2,:,41)+mixrat(1,10,2,:,42)+mixrat(1,10,2,:,53)+mixrat(1,10,2,:,54)+...
+            mixrat(1,10,2,:,64)+mixrat(1,10,2,:,65)+mixrat(1,10,2,:,66)+...
+            mixrat(1,10,2,:,80)+mixrat(1,10,2,:,81)+mixrat(1,10,2,:,82);
+        RO2(1,10,12,:) = mixrat(1,10,12,:,13)+mixrat(1,10,12,:,18)+mixrat(1,10,12,:,27)+mixrat(1,10,12,:,29)+...
+            mixrat(1,10,12,:,41)+mixrat(1,10,12,:,42)+mixrat(1,10,12,:,53)+mixrat(1,10,12,:,54)+...
+            mixrat(1,10,12,:,64)+mixrat(1,10,12,:,65)+mixrat(1,10,12,:,66)+...
+            mixrat(1,10,12,:,80)+mixrat(1,10,12,:,81)+mixrat(1,10,12,:,82);
+        figure
+        plot(squeeze(RO2(1,10,2,:)),'Color','b','LineWidth',2); hold on;
+        plot(squeeze(RO2(1,10,12,:)),'Color','r','LineWidth',2);
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_valid_5000ppt_RO2_vs_time.png'); title('RO_2');
+        xlimits = [0 tN]; xx =0:(tN)/2:tN; xxlab = num2str(xx'/4); xlim(gca,xlimits);
+        xlabel('hour'); ylabel('ppb');
+        set(gca,'XTick',xx,'XTickLabel',xxlab); set(gcf,'visible','off')
+        print(gcf,'-dpng','-r300',imgname);
+end
+close all;
