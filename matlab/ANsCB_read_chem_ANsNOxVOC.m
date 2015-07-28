@@ -326,7 +326,7 @@ switch plotting %timeseries of main species (noAN)
         set(ax,'XTick',xx,'XTickLabel',xxlab); set(ax,'xlim',xlimits);
         [ax,h21,h22]=plotyy(time,dummy,time,squeeze(mixrat(1,10,12,:,4)));
         set(ax,'XTick',xx,'XTickLabel',xxlab); set(ax,'xlim',xlimits);
-        set(ax,{'ycolor'},{'k';'k'}); % % {'b';'r'}
+        set(ax,{'ycolor'},{'b';'r'}); % % {'b';'r'}
         set(ax,'fontsize',ticksize)
         set(h12,'LineWidth',2,'LineStyle','-','Color','r');
         set(h22,'LineWidth',2,'LineStyle','--','Color','r');
@@ -347,7 +347,7 @@ switch plotting %timeseries of main species (noAN)
         set(ax,'XTick',xx,'XTickLabel',xxlab); set(ax,'xlim',xlimits);
         [ax,h21,h22]=plotyy(time,dummy,time,squeeze(mixrat(1,10,12,:,5)));
         set(ax,'XTick',xx,'XTickLabel',xxlab); set(ax,'xlim',xlimits);
-        set(ax,{'ycolor'},{'k';'k'}); % {'b';'r'}
+        set(ax,{'ycolor'},{'b';'r'}); % {'b';'r'}
         set(ax,'fontsize',ticksize)
         set(h12,'LineWidth',2,'LineStyle','-','Color','r');
         set(h22,'LineWidth',2,'LineStyle','--','Color','r');
