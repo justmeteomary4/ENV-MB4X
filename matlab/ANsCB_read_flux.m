@@ -3,7 +3,7 @@
 clear; clc;
 indir = '..';
 outdir = 'ANsCB_pics';
-out = 'flux_';
+out = 'flux';
 fname = '1_01';
 fnamelong = [indir,'/',out, fname,'.dat'];
 f = importdata(fnamelong,' ',2);
