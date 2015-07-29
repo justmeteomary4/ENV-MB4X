@@ -23,7 +23,7 @@ comp{12} = 'nC5H12';
 comp{13} = 'nC5H12AN';
 comp{14} = 'iC5H12';
 comp{15} = 'iC5H12AN';
-for iANs = 1:length(ANs)
+for iANs = 1:length(ANs) % calc numden and mixrat
     for iNOx = 1:length(NOx)
         aggr_array = [];
         for icomp = 1:length(comp)
@@ -57,7 +57,7 @@ spseqfac = {'O3' 'O1D' 'OH' 'NO' 'NO2' ...
 	'BUT2CHO' 'MIPK' 'IPEANO3' 'IPEBNO3' 'IPECNO3'};
 % Set the index of experiment
 iANs = 1;
-for iNOx = 1:length(NOx)
+for iNOx = 1:length(NOx) % print separately to .pdf
     C3H7O2 = mixrat{iANs,iNOx}(:,27)+mixrat{iANs,iNOx}(:,29);
     nC4H9O2 = mixrat{iANs,iNOx}(:,41)+mixrat{iANs,iNOx}(:,42);
     iC4H9O2 = mixrat{iANs,iNOx}(:,53)+mixrat{iANs,iNOx}(:,54);
@@ -246,7 +246,7 @@ outdir = common_outdir;
 nrows = 4;
 ncols = 7;
 fig=figure;
-for iNOx = 1:length(NOx)
+for iNOx = 1:length(NOx) % print all in one .png
     subplot(nrows,ncols,1);  plot(mixrat{iANs,iNOx}(:,1),'LineWidth',2,'Color','b'); title('O_3','Fontsize',7);
 	subplot(nrows,ncols,2);  plot(mixrat{iANs,iNOx}(:,2),'LineWidth',2,'Color','b'); title('O(^1D)','Fontsize',7);
 	subplot(nrows,ncols,3);  plot(mixrat{iANs,iNOx}(:,3),'LineWidth',2,'Color','b'); title('OH','Fontsize',7);
@@ -291,7 +291,7 @@ set(gcf,'visible','off')
 print(gcf,'-dpng','-r300',imgname28);
 end
 %% Net O3 loss/production vs NOx
-clc
+clc;
 outdir = common_outdir;
 fig1 = figure; %set(gcf,'visible','off')
 % fig2 = figure; %set(fig2,'visible','off');
@@ -309,7 +309,6 @@ cvec =[0.25 0.25 0.25
           0.50 0.75 0.75
           0.75 0.25 0.25
           0.25 1.00 0.25];
-
 for iANs = 1:length(ANs)
     for iNOx = 1:length(NOx)
         O3rate(iANs,iNOx,:) =  gradient(mixrat{iANs,iNOx}(:,1))./15.*60;
@@ -326,7 +325,6 @@ end
 for iNOx = 1:length(NOx)
     O3netbase(iNOx) = mixrat{1,iNOx}(end,1)-mixrat{1,iNOx}(1,1); % final mixrat - initial mixrat
 end
-
 for iANs = 2:length(ANs)
     for iNOx = 1:length(NOx)
         O3net_other(iNOx) = mixrat{iANs,iNOx}(end,1)-mixrat{iANs,iNOx}(1,1);
@@ -340,12 +338,34 @@ for iANs = 2:length(ANs)
 imgnameO3NOxdiff = strcat(outdir,'/',part,'_O3NOxdiff.png');
 figure(fig1)
 title('Differences in net O_3 production/loss depending on RONO_2 chemistry');
-legend('base - CH_3ONO_2','base - C_2H_5ONO_2','base - \Sigma C_3H_7ONO_2',...
-'base - \Sigma n-C_4H_9ONO_2','base - \Sigma i-C_4H_9ONO_2','base - \Sigma n-C_5H_1_2ONO_2',...
-'base - \Sigma i-C_5H_1_2ONO_2','Location','east');
+legend('CH_3ONO_2 off','C_2H_5ONO_2 off','\Sigma C_3H_7ONO_2 off',...
+'\Sigma n-C_4H_9ONO_2 off','\Sigma i-C_4H_9ONO_2 off','\Sigma n-C_5H_1_2ONO_2 off',...
+'\Sigma i-C_5H_1_2ONO_2 off','Location','east');
 xlabel('NOx, ppt');
 ylabel('Net O_3 change, ppb');
 print(gcf,'-dpng','-r300',imgnameO3NOxdiff);
+
+%%
+clc
+% figure;
+ylabels = {'O_3';'OH';'HO_2'};
+for iANs = 1:length(ANs)
+    for iNOx = 1:length(NOx)
+        O3net(iNOx) = mixrat{iANs,iNOx}(end,1)-mixrat{iANs,iNOx}(1,1);
+        OHnet(iNOx) = mixrat{iANs,iNOx}(end,3)-mixrat{iANs,iNOx}(1,3);
+        HO2net(iNOx) = mixrat{iANs,iNOx}(end,6)-mixrat{iANs,iNOx}(1,6);
+    end
+    [ax, hlines] = plotyyy(NOx,O3net,NOx,OHnet,NOx,HO2net,ylabels);
+    imgname_yyy= strcat(outdir,'/',part,'_O3_OH_HO2_AN',num2str(iANs),'.png');
+    title({'Net O_3, OH, HO_2 production/loss depending on RONO_2 chemistry',strcat('AN exp: ',num2str(iANs))});
+%     legend('base','base - CH_3ONO_2','base - C_2H_5ONO_2','base - \Sigma C_3H_7ONO_2',...
+%     'base - \Sigma n-C_4H_9ONO_2','base - \Sigma i-C_4H_9ONO_2','base - \Sigma n-C_5H_1_2ONO_2',...
+%     'base - \Sigma i-C_5H_1_2ONO_2','Location','southeast');
+    xlabel('NOx, ppt');
+    % ylabel('Net O_3 change, ppb');
+    set(gcf,'visible','off')
+    print(gcf,'-dpng','-r300',imgname_yyy);
+end
 %% Calculate number of carbon bonds
 ncb = [0 0 0 0 0 ...
     0 0 1 0 4 ...
@@ -374,7 +394,7 @@ for i = 1:numel(ANs)
         RadPotentialInit(i,j) = sum(Pbonds(i,j,1,:),4);
         RadPotentialEnd(i,j) = sum(Pbonds(i,j,end,:),4);
         RadPotentialDiff(i,j) = RadPotentialEnd(i,j) - RadPotentialInit(i,j);
-        epsilon(i,j) = (mixrat{i,j}(end,1)-mixrat{i,j}(1,1))/RadPotentialDiff(i,j);
+        epsilon(i,j) = (numden{i,j}(end,1)-numden{i,j}(1,1))/RadPotentialDiff(i,j);
         RadPotentialRate(i,j,:) = gradient(squeeze(sum(Pbonds(i,j,:,:),4)))./15.*60;
         O3perCBrate(i,j,:) = O3rate(i,j,:)./RadPotentialRate(i,j,:);
 %         RadPotentialNoCH4(i,j) = RadPotentialEnd(i,j) - Pbonds(i,j,end,10);
