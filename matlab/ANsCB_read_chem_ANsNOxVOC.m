@@ -127,7 +127,7 @@ for i = 1:numel(AN)
     if exist(outdir,'dir') ~= 7; mkdir(outdir); end
     for j = 1:numel(NOx)
         for k = 1:numel(VOC)
-            netO3(i,j,k) = (mixrat(i,j,k,end,1)-mixrat(i,j,k,1,1));
+            netO3(i,j,k) = mixrat(i,j,k,end,1)-mixrat(i,j,k,1,1);
             netO3rate(i,j,k) = (mixrat(i,j,k,end,1)-mixrat(i,j,k,1,1))/24;
             endHO2RO2(i,j,k) = mixrat(i,j,k,end,6)+mixrat(i,j,k,end,13)+mixrat(i,j,k,end,18)+...
                 mixrat(i,j,k,end,27)+mixrat(i,j,k,end,29)+mixrat(i,j,k,end,41)+mixrat(i,j,k,end,42)+...
@@ -135,7 +135,7 @@ for i = 1:numel(AN)
                 mixrat(i,j,k,end,66)+mixrat(i,j,k,end,80)+mixrat(i,j,k,end,81)+mixrat(i,j,k,end,82);
         end
     end
-    pic = 5;
+    pic = 7;
     figure
     switch pic
         case 1 % netO3rate NOx = 1 ppb -100 ppb with 'inorganics only'
@@ -168,7 +168,18 @@ for i = 1:numel(AN)
             title(['HO_2+RO_2 mixing ratio with RONO_2 chemistry ',onoff{i}]);
             xlabel('VOC, ppbC');
             ylabel('NOx, ppb'); set(gca,'YScale','log')
-        case 6 % 
+        case 6 % netO3rate NOx = 5 ppt - 100 ppb no 'inorganics only'
+            contourf(VOCppbC(2:end),NOx,squeeze(netO3rate(i,:,2:end))); colorbar; colormap(paruly)
+            imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3rate_noINORG_NOx_5ppt_100ppb.png');
+            title(['Net O_3 production rate with RONO_2 chemistry ',onoff{i}]);
+            xlabel('VOC, ppbC');
+            ylabel('NOx, ppt'); set(gca,'YScale','log')
+        case 7 % netO3mixrat NOx = 5 ppt - 100 ppb no 'inorganics only'
+            contourf(VOCppbC(2:end),NOx,squeeze(netO3(i,:,2:end))); colorbar; colormap(paruly)
+            imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3mixrat_noINORG_NOx_5ppt_100ppb.png');
+            title(['Net O_3 production with RONO_2 chemistry ',onoff{i}]);
+            xlabel('VOC, ppbC');
+            ylabel('NOx, ppt'); set(gca,'YScale','log')
     end
 %     set(gca, 'CLim', [min(min(min(netO3))), max(max(max(netO3)))]);
     set(gcf,'visible','off')
@@ -180,16 +191,16 @@ i = 2;
 outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i});
 if exist(outdir,'dir') ~= 7; mkdir(outdir); end
 for j = 1:numel(NOx)
-    for k = 2:numel(VOC)
+    for k = 1:numel(VOC)
         netO3ratediff(j,k) = netO3rate(2,j,k)-netO3rate(1,j,k);
         netO3mixratdiff(j,k) = netO3(2,j,k)-netO3(1,j,k);
     end
 end
-pic = 4;
+pic = 1;
 figure
 switch pic
     case 1 % netO3ratediff NOx = 5 ppt - 100 ppb no 'inorganics only'
-        contourf(VOCppbC,NOx,netO3ratediff); colorbar; colormap(paruly)
+        contourf(VOCppbC(2:end),NOx,netO3ratediff(:,2:end)); colorbar; colormap(paruly)
         imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3ratediff_noINORG_NOx_5ppt_100ppb.png');
         title('Difference in net O_3 production rate');
         xlabel('VOC, ppb');
