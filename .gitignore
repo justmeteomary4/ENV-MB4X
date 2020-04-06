@@ -1,7 +1,8 @@
+*.asv
+*.dat
+*.f90
 *.fpf
 *.log
-*.Rhistory
-*.dat
 *.png
-*.asv
-*.f90
+*.Rhistory
+*.xlsx
