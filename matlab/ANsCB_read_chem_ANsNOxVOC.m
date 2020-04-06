@@ -7,7 +7,8 @@ common_outdir = 'ANsCB_pics';
 addpath('D:\FACSIMILE\ANsCBmodel\altmany-export_fig-ea12243');
 addpath('D:\FACSIMILE\ANsCBmodel\paruly\paruly');
 part = 'chem';
-AN = {'noAN' 'allAN'};
+AN = {'noAN' 'allAN' 'C1' 'C2' 'C3' 'nC4' 'iC4' 'nC5' 'iC5'};
+% AN = {'noAN' 'allAN'};
 NOx = [5 25 50 100 250 500 750 1000 2500 5000 10000 50000 100000];
 VOC = [0 1 2 3 4 5 6 7 8 9 10 11];
 comp = {'CO' 'CH4' 'CH4AN' 'C2H6' 'C2H6AN' 'C3H8' 'C3H8AN' 'nC4H10' 'nC4H10AN' ...
@@ -15,13 +16,17 @@ comp = {'CO' 'CH4' 'CH4AN' 'C2H6' 'C2H6AN' 'C3H8' 'C3H8AN' 'nC4H10' 'nC4H10AN' .
 for i = 1:numel(AN) % calc numden and mixrat
     for j = 1:numel(NOx)
         for k = 1:numel(VOC)
-            if i == 2 && k ==1 
+            if i == 2 && k == 1
+                numden(i,j,k,:,:) = NaN;
+                mixrat(i,j,k,:,:) = NaN;
+            elseif i > 2 && (j~=11 || k~=7)
                 numden(i,j,k,:,:) = NaN;
                 mixrat(i,j,k,:,:) = NaN;
             else
                 aggr_array = [];
                 for icomp = 1:numel(comp)
                     fname = [indir,'/',part,'_',num2str(AN{i}),'_',num2str(NOx(j)),'_',num2str(VOC(k)),'_',comp{icomp},'.dat'];
+%                     disp(['Opening',fname])
                     f = importdata(fname);
                     aggr_array = horzcat(aggr_array, f);
                 end
@@ -31,6 +36,7 @@ for i = 1:numel(AN) % calc numden and mixrat
         end
     end
 end
+disp('done')
 tN = 96;
 %% General plotting variables
 cvec =[0.25 0.25 0.25 
@@ -116,6 +122,11 @@ end
 end
 %% Net O3 production vs NOx and VOC depending on ANs presence (with/without)
 clc; % GOOD
+clc; plotting = 1; % 0 - don't plot, 1 - plot;
+ext = '.eps'; % '.png' '.eps
+driver = '-depsc'; % '-dpng' '-depsc'
+xhsize = 20; yhsize = 20; ticksize = 20;
+pic = 1;
 VOCppbC(1) = mixrat(1,1,1,1,8)*1; % CO only
 for k = 2:numel(VOC) % VOCppbC(2:end)
     VOCppbC(k) = mixrat(1,1,k,1,8)*1+mixrat(1,1,k,1,10)*1+mixrat(1,1,k,1,16)*2+...
@@ -135,15 +146,14 @@ for i = 1:numel(AN)
                 mixrat(i,j,k,end,66)+mixrat(i,j,k,end,80)+mixrat(i,j,k,end,81)+mixrat(i,j,k,end,82);
         end
     end
-    pic = 9;
     figure
     switch pic
         case 1 % netO3rate NOx = 1 ppb -100 ppb with 'inorganics only'
-            contourf(VOCppbC,NOx(8:end)/10e3,squeeze(netO3rate(i,8:end,:))); colorbar; colormap(paruly)
-            imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3rate_withINORG_NOx_1ppb_100ppb.png');
-            title(['Net O_3 production rate with RONO_2 chemistry ',onoff{i}]);
-            xlabel('VOC, ppbC');
-            ylabel('NOx, ppb'); set(gca,'YScale','log')
+            contourf(VOCppbC,NOx(8:end)/1e3,squeeze(netO3rate(i,8:end,:))); colorbar; colormap(paruly)
+            imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3rate_withINORG_NOx_1ppb_100ppb',ext);
+%             title(['Net O_3 production rate with RONO_2 chemistry ',onoff{i}]);
+            xlabel('VOC, ppbC','FontSize',xhsize);
+            ylabel('NOx, ppb','FontSize', yhsize); set(gca,'YScale','log','FontSize',ticksize)
         case 2 % netO3rate NOx = 5 ppt - 100 ppb with 'inorganics only'
             contourf(VOCppbC,NOx,squeeze(netO3rate(i,:,:))); colorbar; colormap(paruly)
             imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3rate_withINORG_NOx_5ppt_100ppb.png');
@@ -182,10 +192,10 @@ for i = 1:numel(AN)
             ylabel('NOx, ppt'); set(gca,'YScale','log')
         case 8 % netO3rate NOx = 250 ppt - 100 ppb no 'inorganics only', i.e. O3 formation only
             contourf(VOCppbC(2:end),NOx(5:end),squeeze(netO3rate(i,5:end,2:end))); colorbar; colormap(paruly)
-            imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3rate_noINORG_NOx_250ppt_100ppb.png');
-            title(['Net O_3 production rate with RONO_2 chemistry ',onoff{i}]);
-            xlabel('VOC, ppbC');
-            ylabel('NOx, ppt'); set(gca,'YScale','log')
+            imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3rate_noINORG_NOx_250ppt_100ppb',ext);
+%             title(['Net O_3 production rate with RONO_2 chemistry ',onoff{i}]);
+            xlabel('VOC, ppbC','FontSize',xhsize);
+            ylabel('NOx, ppt','FontSize',xhsize); set(gca,'YScale','log','FontSize',ticksize)
         case 8 % netO3mixrat NOx = 5 ppt - 100 ppb no 'inorganics only'
             contourf(VOCppbC(2:end),NOx,squeeze(netO3(i,:,2:end))); colorbar; colormap(paruly)
             imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3mixrat_noINORG_NOx_5ppt_100ppb.png');
@@ -194,17 +204,21 @@ for i = 1:numel(AN)
             ylabel('NOx, ppt'); set(gca,'YScale','log')
         case 9 % netO3mixrat NOx = 250 ppt - 100 ppb no 'inorganics only', i.e. O3 formation only
             contourf(VOCppbC(2:end),NOx(5:end),squeeze(netO3(i,5:end,2:end))); colorbar; colormap(paruly)
-            imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3mixrat_noINORG_NOx_250ppt_100ppb.png');
-            title(['Net O_3 production with RONO_2 chemistry ',onoff{i}]);
-            xlabel('VOC, ppbC');
-            ylabel('NOx, ppt'); set(gca,'YScale','log')
+            imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3mixrat_noINORG_NOx_250ppt_100ppb',ext);
+%             title(['Net O_3 production with RONO_2 chemistry ',onoff{i}]);
+            xlabel('VOC, ppbC','FontSize',xhsize);
+            ylabel('NOx, ppt','FontSize',yhsize); set(gca,'YScale','log','FontSize',ticksize)
     end
 %     set(gca, 'CLim', [min(min(min(netO3))), max(max(max(netO3)))]);
     set(gcf,'visible','off')
-    print(gcf,'-dpng','-r300',imgname);
+    print(gcf,driver,'-r300',imgname);
 end
 %% Difference in net O3 production vs NOx and VOC between experiments with and without ANs
 clc; %GOOD
+clc; plotting = 1; % 0 - don't plot, 1 - plot;
+ext = '.eps'; % '.png' '.eps
+driver = '-depsc'; % '-dpng' '-depsc'
+xhsize = 20; yhsize = 20; ticksize = 20;
 i = 2;
 outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i});
 if exist(outdir,'dir') ~= 7; mkdir(outdir); end
@@ -212,7 +226,8 @@ for j = 1:numel(NOx)
     for k = 1:numel(VOC)
         netO3ratediff(j,k) = netO3rate(2,j,k)-netO3rate(1,j,k);
         netO3mixratdiff(j,k) = netO3(2,j,k)-netO3(1,j,k);
-        netO3mixratdiffpercent(j,k) = (((netO3(2,j,k)-netO3(1,j,k))./(netO3(2,j,k)+netO3(1,j,k)))/2)*100;
+%         netO3mixratdiffpercent(j,k) = (((netO3(2,j,k)-netO3(1,j,k))./(netO3(2,j,k)+netO3(1,j,k)))/2)*100;
+        netO3mixratdiffpercent(j,k) = ((netO3(2,j,k)-netO3(1,j,k))./netO3(1,j,k))*100;
     end
 end
 pic = 7;
@@ -232,10 +247,10 @@ switch pic
         ylabel('NOx, ppt'); set(gca,'YScale','log')
     case 3 % netO3ratediff NOx = 250 ppt - 100 ppb no 'inorganics only', i.e. O3 formation only
         contourf(VOCppbC(2:end),NOx(5:end),netO3ratediff(5:end,2:end)); colorbar; colormap(paruly)
-        imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3ratediff_noINORG_NOx_250ppt_100ppb.png');
-        title('Difference in net O_3 production rate');
-        xlabel('VOC, ppbC');
-        ylabel('NOx, ppt'); set(gca,'YScale','log')
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3ratediff_noINORG_NOx_250ppt_100ppb',ext);
+%         title('Difference in net O_3 production rate');
+        xlabel('VOC, ppbC','FontSize',xhsize);
+        ylabel('NOx, ppt','FontSize', yhsize); set(gca,'YScale','log','FontSize',ticksize)
     case 4 % netO3mixratdiff NOx = 5 ppt - 100 ppb no 'inorganics only'
         contourf(VOCppbC(2:end),NOx,netO3mixratdiff(:,2:end)); colorbar; colormap(paruly)
         imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3mixratdiff_noINORG_NOx_5ppt_100ppb.png');
@@ -250,19 +265,19 @@ switch pic
         ylabel('NOx, ppt'); set(gca,'YScale','log')
     case 6 % netO3mixratdiff NOx = 250 ppt - 100 ppb no 'inorganics only', i.e. O3 formation only
         contourf(VOCppbC(2:end),NOx(5:end),netO3mixratdiff(5:end,2:end)); colorbar; colormap(paruly)
-        imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3mixratdiff_noINORG_NOx_250ppt_100ppb.png');
-        title('Difference in net O_3 production');
-        xlabel('VOC, ppb');
-        ylabel('NOx, ppt'); set(gca,'YScale','log')
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3mixratdiff_noINORG_NOx_250ppt_100ppb',ext);
+%         title('Difference in net O_3 production');
+        xlabel('VOC, ppb','FontSize',xhsize);
+        ylabel('NOx, ppt','FontSize',yhsize); set(gca,'YScale','log','FontSize',ticksize)
     case 7 % 
         contourf(VOCppbC(2:end),NOx(5:end),netO3mixratdiffpercent(5:end,2:end)); colorbar; colormap(paruly)
-        imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3mixratdiffpercent_noINORG_NOx_250ppt_100ppb.png');
-        title('Difference in net O_3 production in %');
-        xlabel('VOC, ppb');
-        ylabel('NOx, ppt'); set(gca,'YScale','log')
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_netO3mixratdiffpercent_noINORG_NOx_250ppt_100ppb_new',ext);
+%         title('Difference in net O_3 production in %');
+        xlabel('VOC, ppb','FontSize',xhsize);
+        ylabel('NOx, ppt','FontSize',yhsize); set(gca,'YScale','log','FontSize',ticksize)
 end
 set(gcf,'visible','off')
-print(gcf,'-dpng','-r300',imgname);
+print(gcf,driver,'-r300',imgname);
 %% Net O3 production vs NOx (Z = VOC)
 clc;
 cmap = cvec;
@@ -308,6 +323,10 @@ for i = 1:numel(AN) % net O3 production vs VOCsum
 end
 %% Net ANs production vs NOx and VOC
 clc; % GOOD
+clc; plotting = 1; % 0 - don't plot, 1 - plot;
+ext = '.eps'; % '.png' '.eps
+driver = '-depsc'; % '-dpng' '-depsc'
+xhsize = 20; yhsize = 20; ticksize = 20;
 i = 2;
 outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i});
 if exist(outdir,'dir') ~= 7; mkdir(outdir); end
@@ -330,13 +349,13 @@ switch pic
         ylabel('NOx, ppt'); set(gca,'YScale','log');
     case 2 % endtotalANs NOx = 250 ppt - 100 ppb no 'inorganics only'
         contourf(VOCppbC(2:end),NOx(5:end),ANs(5:end,2:end,end)); colorbar; colormap(paruly)
-        imgname = strcat(outdir,'/',part,'_',AN{i},'_endtotalANs_noINORG_NOx_250ppt_100ppb.png');
-        title('Net RONO_2 production');
-        xlabel('VOC, ppbC');
-        ylabel('NOx, ppt'); set(gca,'YScale','log');
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_endtotalANs_noINORG_NOx_250ppt_100ppb',ext);
+%         title('Net RONO_2 production');
+        xlabel('VOC, ppbC','FontSize',xhsize);
+        ylabel('NOx, ppt','FontSize',yhsize); set(gca,'YScale','log','FontSize',ticksize);
 end
 set(gcf,'visible','off')
-print(gcf,'-dpng','-r300',imgname);
+print(gcf,driver,'-r300',imgname);
 %% PO3/PsumANs
 i = 2;
 for j = 1:numel(NOx)
@@ -556,16 +575,173 @@ ncb = [0 0 0 0 0 ...
 for i = 1:numel(AN)
     for j = 1:numel(NOx)
         for k = 1:numel(VOC)
-        arr = numden(i,j,k);
+        arr = squeeze(numden(i,j,k,:,:));
         ncb2D =  repmat(ncb,size(arr,1),1); % vertically stack a row vector
-        Pbonds(i,j,k,:) = arr.*ncb2D;
-        RadPotentialInit(i,j) = sum(Pbonds(i,j,1,:),4);
-        RadPotentialEnd(i,j) = sum(Pbonds(i,j,end,:),4);
-        RadPotentialDiff(i,j) = RadPotentialEnd(i,j) - RadPotentialInit(i,j);
-        epsilon(i,j) = (numden(i,j,k,end,1)-numden(i,j,k,1,1))/RadPotentialDiff(i,j);
-        RadPotentialRate(i,j,:) = gradient(squeeze(sum(Pbonds(i,j,:,:),4)))./15.*60;
+        Pbonds(i,j,k,:,:) = arr.*ncb2D;
+        RadPotentialInit = sum(Pbonds(i,j,k,1,:),5);
+        RadPotentialEnd = sum(Pbonds(i,j,k,end,:),5);
+        RadPotentialDiff(i,j,k) = RadPotentialEnd - RadPotentialInit;
+        epsilon(i,j,k) = (numden(i,j,k,end,1)-numden(i,j,k,1,1))/RadPotentialDiff(i,j,k);
+        epsilondiff(j,k) = epsilon(2,j,k)-epsilon(1,j,k);
+        epsiloncb(i,j,k) = 1/epsilon(i,j,k);
+%         RadPotentialRate(i,j,k,:) = gradient(squeeze(sum(Pbonds(i,j,k,:,:),4)))./15.*60;
 %         O3perCBrate(i,j,:) = O3rate(i,j,:)./RadPotentialRate(i,j,:);
 %         RadPotentialNoCH4(i,j) = RadPotentialEnd(i,j) - Pbonds(i,j,end,10);
         end
     end
+    outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{i});
+    if exist(outdir,'dir') ~= 7; mkdir(outdir); end
+    pic = 2;
+    figure
+    ext = '.eps'; % '.png'
+driver = '-depsc'; % '-dpng'
+xhsize = 20; yhsize = 20; ticksize = 20;
+    switch pic
+    case 1 % epsilon noANs&allANs NOx = 5 ppt - 100 ppb no 'inorganics only'
+        contourf(VOCppbC(2:end),NOx,squeeze(epsilon(i,:,2:end))); colorbar; colormap(paruly)
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_epsilon_noINORG_NOx_5ppt_100ppb.png');
+        title('epsilon');
+        xlabel('VOC, ppbC');
+        ylabel('NOx, ppt'); set(gca,'YScale','log');
+     case 2 % epsilon noANs&allANs NOx = 250 ppt - 100 ppb no 'inorganics only'
+        contourf(VOCppbC(2:end),NOx(5:end),squeeze(epsilon(i,5:end,2:end))); colorbar; colormap(paruly)
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_epsilon_noINORG_NOx_250ppt_100ppb',ext);
+        title('epsilon');
+        xlabel('VOC, ppbC','FontSize',xhsize);
+        ylabel('NOx, ppt','FontSize',yhsize); set(gca,'YScale','log','FontSize',ticksize);
+    case 3 % epsilondiff noANs&allANs NOx = 5 ppt - 100 ppb no 'inorganics only'
+        contourf(VOCppbC(2:end),NOx,epsilondiff(:,2:end)); colorbar; colormap(paruly)
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_epsilondiff_noINORG_NOx_5ppt_100ppb.png');
+        title('epsilondiff');
+        xlabel('VOC, ppbC');
+        ylabel('NOx, ppt'); set(gca,'YScale','log');
+    case 4 % epsilondiff noANs&allANs NOx = 250 ppt - 100 ppb no 'inorganics only'
+        contourf(VOCppbC(2:end),NOx(5:end),epsilondiff(5:end,2:end)); colorbar; colormap(paruly)
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_epsilondiff_noINORG_NOx_250ppt_100ppb.png');
+        title('epsilondiff');
+        xlabel('VOC, ppbC');
+        ylabel('NOx, ppt'); set(gca,'YScale','log');
+    case 5 % epsiloncb noANs&allANs NOx = 5 ppt - 100 ppb no 'inorganics only'
+        contourf(VOCppbC(2:end),NOx,squeeze(epsiloncb(i,:,2:end))); colorbar; colormap(paruly)
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_epsiloncb_noINORG_NOx_5ppt_100ppb.png');
+        title('epsilon');
+        xlabel('VOC, ppbC');
+        ylabel('NOx, ppt'); set(gca,'YScale','log');
+     case 6 % epsiloncb noANs&allANs NOx = 250 ppt - 100 ppb no 'inorganics only'
+        contourf(VOCppbC(2:end),NOx(7:end),squeeze(epsiloncb(i,7:end,2:end))); colorbar; colormap(paruly)
+        imgname = strcat(outdir,'/',part,'_',AN{i},'_epsiloncb_noINORG_NOx_250ppt_100ppb.png');
+        title('epsilon');
+        xlabel('VOC, ppbC');
+        ylabel('NOx, ppt'); set(gca,'YScale','log');
+        caxis([0 10])
+        end
+set(gcf,'visible','off')
+print(gcf,driver,'-r300',imgname);
+end
+%% Epsilon
+cmap = cvec;
+figure
+for k = 2:numel(VOC)
+plot(NOx,epsilon(1,:,k),'Color',cmap(k,:),'LineWidth',2); hold on;
+xlabel('NOx, ppt'); set(gca,'XScale','log');
+ylim([-1.5 1.5])
+end
+figure
+for k = 1:numel(VOC)
+plot(NOx,epsilon(2,:,k),'Color',cmap(k,:),'LineWidth',2); hold on;
+xlabel('NOx, ppt'); set(gca,'XScale','log');
+ylim([-1.5 1.5])
+end
+%% Epsilon for min and max VOC together
+figure
+plot(NOx,epsilon(1,:,2),'-b','LineWidth',2); hold on;
+plot(NOx,epsilon(1,:,end),'--b','LineWidth',2); hold on;
+plot(NOx,epsilon(2,:,2),'-r','LineWidth',2); hold on;
+plot(NOx,epsilon(2,:,end),'--r','LineWidth',2);
+xlabel('NOx, ppt'); set(gca,'XScale','log');
+%% Contribution of different ANs: differences in O3
+clc; plotting = 1; % 0 - don't plot, 1 - plot;
+ext = '.eps'; % '.png' '.eps
+driver = '-depsc'; % '-dpng' '-depsc'
+xhsize = 12; yhsize = 12; ticksize = 12; leghsize = 12;
+switch plotting
+    case 1
+cmap = cvec; 
+outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{2});
+if exist(outdir,'dir') ~= 7; mkdir(outdir); end
+fig = figure; % all ANs - noANs
+for i = [1,3:9]
+    timeO3diff(i,:) = mixrat(2,11,7,:,1)-mixrat(i,11,7,:,1);
+end
+plot(timeO3diff(1,:),'Color','k','LineWidth',4);  hold on;
+for i = 3:9 % continue plot
+    plot(timeO3diff(i,:),'Color',cmap(i,:),'LineWidth',2); hold on; 
+end
+%     title('Difference in O_3 prodution with time depending on RONO_2 chemistry');
+    leg = legend('base - no RONO_2',...
+        'base - CH_3ONO_2',...
+        'base - C_2H_5ONO_2',...
+        'base - \Sigma C_3H_7ONO_2',...
+        'base - \Sigma n-C_4H_9ONO_2',...
+        'base - \Sigma i-C_4H_9ONO_2',...
+        'base - \Sigma n-C_5H_1_2ONO_2',...
+        'base - \Sigma i-C_5H_1_2ONO_2');
+    set(leg,'Location','eastoutside','FontSize',leghsize)
+     xlimits = [0 tN];
+     xx =0:(tN)/2:tN;
+     xxlab = num2str(xx'/4);
+     xlabel(gca,'hour','FontSize',xhsize)
+     ylabel(gca,'ppb','FontSize',yhsize)
+     set(gca,'FontSize',ticksize)
+     xlim(xlimits);
+     set(gca,'XTick',xx,'XTickLabel',xxlab)
+     imgname = strcat(outdir,'/',part,'_',AN{2},'_timeO3diff_10ppbNOx6VOC',ext);
+     set(gcf,'visible','off')
+%      print(gcf,driver,'-r300',imgname);
+end
+%% Contribution of different ANs: ANs concentrations with time
+clc; plotting = 1; % 0 - don't plot, 1 - plot;
+ext = '.eps'; % '.png' '.eps'
+driver = '-depsc'; % '-dpng' '-depsc'
+xhsize = 12; yhsize = 12; ticksize = 12; leghsize = 12;
+switch plotting
+    case 1
+            j = 11
+            k = 7
+                    C3H7NO3 = squeeze(mixrat(5,j,k,:,36)+mixrat(5,j,k,:,37));
+                    nC4H9NO3 = squeeze(mixrat(6,j,k,:,48)+mixrat(6,j,k,:,49));
+                    iC4H9NO3 = squeeze(mixrat(7,j,k,:,58)+mixrat(7,j,k,:,59));
+                    nC5H11NO3 = squeeze(mixrat(8,j,k,:,73)+mixrat(8,j,k,:,74)+mixrat(8,j,k,:,75));
+                    iC5H11NO3 = squeeze(mixrat(9,j,k,:,88)+mixrat(9,j,k,:,89)+mixrat(9,j,k,:,90));
+        cmap = cvec; 
+            outdir = strcat(common_outdir,'/ANsNOxVOC/',AN{2});
+            if exist(outdir,'dir') ~= 7; mkdir(outdir); end
+            fig = figure;
+            plot(squeeze(mixrat(3,11,7,:,15).*1e3),'Color',cmap(3,:),'LineWidth',2); hold on; 
+            plot(squeeze(mixrat(4,11,7,:,24).*1e3),'Color',cmap(4,:),'LineWidth',2); hold on; 
+            plot(squeeze(C3H7NO3.*1e3),'Color',cmap(5,:),'LineWidth',2); hold on; 
+            plot(squeeze(nC4H9NO3.*1e3),'Color',cmap(6,:),'LineWidth',2); hold on;
+            plot(squeeze(iC4H9NO3.*1e3),'Color',cmap(7,:),'LineWidth',2); hold on;
+            plot(squeeze(nC5H11NO3.*1e3),'Color',cmap(8,:),'LineWidth',2); hold on;
+            plot(squeeze(iC5H11NO3.*1e3),'Color',cmap(9,:),'LineWidth',2);
+            leg = legend('CH_3ONO_2',...
+                'C_2H_5ONO_2',...
+                '\Sigma C_3H_7ONO_2',...
+                '\Sigma n-C_4H_9ONO_2',...
+                '\Sigma i-C_4H_9ONO_2',...
+                '\Sigma n-C_5H_1_2ONO_2',...
+                '\Sigma i-C_5H_1_2ONO_2');
+            set(leg,'Location','eastoutside','FontSize',leghsize)
+            xlimits = [0 tN];
+            xx =0:(tN)/2:tN;
+            xxlab = num2str(xx'/4);
+            xlabel(gca,'hour','FontSize',xhsize)
+            ylabel(gca,'ppt','FontSize',yhsize)
+%             ylim([0 300])
+            set(gca,'FontSize',ticksize)
+            xlim(xlimits);
+            set(gca,'XTick',xx,'XTickLabel',xxlab)
+            imgname = strcat(outdir,'/',part,'_',AN{2},'_timeANs_10ppbNOx6VOC',ext);
+            set(gcf,'visible','off')
+%             print(gcf,driver,'-r300',imgname);
 end
