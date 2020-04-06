@@ -6,3 +6,16 @@
 *.png
 *.Rhistory
 *.xlsx
+ANsCB_all.fac
+matlab/ANsCB_pics/
+matlab/ANsCB_read_chem_NOx.m
+matlab/GEN_calc_JD.m
+matlab/GEN_calc_cosza.m
+matlab/GEN_calc_cosza_func.m
+matlab/MCM_photolysis/
+matlab/MLO/
+matlab/dashline.m
+matlab/fixPSlinestyle.m
+matlab/greg2julian.m
+matlab/plotyyy.m
+read_ANsCB.R
